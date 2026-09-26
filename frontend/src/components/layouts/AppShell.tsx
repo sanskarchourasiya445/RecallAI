@@ -17,14 +17,20 @@ export function AppShell({
   onNewMeetingClick,
   onSearch,
 }: AppShellProps) {
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const [activeNav, setActiveNav] = useState("meetings");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800 antialiased font-sans">
-      {/* 1. LEFT FIXED SIDEBAR (~235px wide, deep navy) */}
+      {/* 1. LEFT COLLAPSIBLE / SLIDING SIDEBAR */}
       <Sidebar
         activeNav={activeNav}
         setActiveNav={setActiveNav}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
         pendingActionsCount={3}
         onNewMeetingClick={onNewMeetingClick}
       />
@@ -32,7 +38,11 @@ export function AppShell({
       {/* 2. CENTRAL WORKSPACE + TOP BAR */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Top Header Bar with Global Search & User Profile */}
-        <TopBar onSearch={onSearch} pendingNotificationsCount={1} />
+        <TopBar
+          onSearch={onSearch}
+          pendingNotificationsCount={1}
+          onOpenMobileMenu={() => setIsMobileSidebarOpen(true)}
+        />
 
         {/* Main Content Area */}
         <main className="flex-1 p-4 overflow-y-auto space-y-3">

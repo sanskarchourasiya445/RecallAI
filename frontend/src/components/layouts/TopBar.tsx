@@ -1,14 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, Bell, ChevronDown } from "lucide-react";
+import { Search, Bell, ChevronDown, Menu } from "lucide-react";
 
 interface TopBarProps {
   onSearch?: (query: string) => void;
   pendingNotificationsCount?: number;
+  onOpenMobileMenu?: () => void;
 }
 
-export function TopBar({ onSearch, pendingNotificationsCount = 1 }: TopBarProps) {
+export function TopBar({
+  onSearch,
+  pendingNotificationsCount = 1,
+  onOpenMobileMenu,
+}: TopBarProps) {
   const [searchVal, setSearchVal] = useState("");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -18,22 +23,33 @@ export function TopBar({ onSearch, pendingNotificationsCount = 1 }: TopBarProps)
   };
 
   return (
-    <header className="h-[52px] px-5 flex items-center justify-between gap-4 border-b border-slate-200/80 bg-white/85 backdrop-blur-md sticky top-0 z-20">
-      {/* Global Search Bar (bounded ~550px, not full screen) */}
-      <div className="relative w-full max-w-[550px]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input
-          type="text"
-          value={searchVal}
-          onChange={(e) => setSearchVal(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Search meetings, keywords, or ask anything..."
-          className="w-full h-8 pl-9 pr-12 rounded-lg bg-slate-50/90 hover:bg-slate-100/70 focus:bg-white text-xs text-slate-800 placeholder:text-slate-400 border border-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all shadow-2xs"
-        />
-        <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-          <kbd className="px-1.5 py-0.2 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">
-            ⌘ K
-          </kbd>
+    <header className="h-[54px] px-4 md:px-5 flex items-center justify-between gap-3 border-b border-slate-200/80 bg-white/85 backdrop-blur-md sticky top-0 z-20">
+      <div className="flex items-center gap-2 flex-1 max-w-[620px]">
+        {/* Mobile Hamburger Menu Toggle */}
+        <button
+          onClick={onOpenMobileMenu}
+          aria-label="Open navigation menu"
+          className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Global Search Bar */}
+        <div className="relative w-full">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={searchVal}
+            onChange={(e) => setSearchVal(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Search meetings, keywords, or ask anything..."
+            className="w-full h-8 pl-9 pr-12 rounded-lg bg-slate-50/90 hover:bg-slate-100/70 focus:bg-white text-xs text-slate-800 placeholder:text-slate-400 border border-slate-200 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500/20 transition-all shadow-2xs"
+          />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+            <kbd className="px-1.5 py-0.2 text-[10px] font-semibold text-slate-400 bg-white border border-slate-200 rounded shadow-2xs">
+              ⌘ K
+            </kbd>
+          </div>
         </div>
       </div>
 

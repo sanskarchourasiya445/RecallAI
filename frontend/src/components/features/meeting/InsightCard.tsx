@@ -75,16 +75,16 @@ export function InsightCardsGrid({
           <div
             key={card.id}
             onClick={() => onSelectCard && onSelectCard(card.id)}
-            className={`group h-[88px] rounded-xl border ${card.border} ${card.bg} px-3.5 py-3 flex items-center justify-between cursor-pointer transition-all duration-150 shadow-card hover:shadow-card-hover hover:-translate-y-0.5`}
+            className={`group h-[90px] sm:h-[94px] rounded-xl border ${card.border} ${card.bg} px-3 sm:px-3.5 py-2.5 sm:py-3 flex items-center justify-between cursor-pointer transition-all duration-150 shadow-card hover:shadow-card-hover hover:-translate-y-0.5`}
           >
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <div
                 className={`w-8 h-8 rounded-lg ${card.iconBg} flex items-center justify-center shadow-2xs shrink-0`}
               >
                 <Icon className="w-4 h-4" />
               </div>
               <div className="leading-tight min-w-0">
-                <h4 className="text-[13px] font-bold text-slate-900 tracking-tight truncate">
+                <h4 className="text-[12px] sm:text-[13px] font-bold text-slate-900 tracking-tight whitespace-nowrap">
                   {card.title}
                 </h4>
                 <p className="text-[11px] text-slate-500 mt-0.5 font-normal truncate">
@@ -93,7 +93,7 @@ export function InsightCardsGrid({
               </div>
             </div>
             <ChevronRight
-              className={`w-3.5 h-3.5 ${card.arrowColor} transition-transform group-hover:translate-x-0.5 shrink-0 ml-2`}
+              className={`w-3.5 h-3.5 ${card.arrowColor} transition-transform group-hover:translate-x-0.5 shrink-0 ml-1.5`}
             />
           </div>
         );

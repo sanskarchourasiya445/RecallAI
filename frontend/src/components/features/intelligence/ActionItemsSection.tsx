@@ -97,7 +97,7 @@ export function ActionItemsSection({
 
                 <div className="flex-1 min-w-0">
                   <p
-                    className={`text-xs font-medium leading-snug truncate ${
+                    className={`text-xs font-medium leading-snug line-clamp-2 break-words ${
                       isChecked ? "line-through text-slate-400" : "text-slate-800"
                     }`}
                   >

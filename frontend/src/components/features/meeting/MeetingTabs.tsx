@@ -38,7 +38,7 @@ export function MeetingTabs({ activeTab, onChangeTab }: MeetingTabsProps) {
 
   return (
     <div className="w-full bg-white rounded-xl border border-slate-200/80 p-1 shadow-card">
-      <div className="flex items-center justify-between gap-1 w-full overflow-x-auto">
+      <div className="grid grid-cols-7 gap-1 w-full">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -47,7 +47,8 @@ export function MeetingTabs({ activeTab, onChangeTab }: MeetingTabsProps) {
             <button
               key={tab.id}
               onClick={() => onChangeTab(tab.id)}
-              className={`flex-1 min-w-[95px] flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-medium transition-all ${
+              title={tab.label}
+              className={`w-full flex items-center justify-center gap-1 sm:gap-1.5 py-1.5 px-1 sm:px-2 rounded-lg text-[11px] sm:text-xs font-medium transition-all ${
                 isActive
                   ? "bg-indigo-600 text-white font-semibold shadow-xs"
                   : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
@@ -58,7 +59,7 @@ export function MeetingTabs({ activeTab, onChangeTab }: MeetingTabsProps) {
                   isActive ? "text-white" : "text-slate-400"
                 }`}
               />
-              <span className="whitespace-nowrap">{tab.label}</span>
+              <span className="truncate">{tab.label}</span>
             </button>
           );
         })}
