@@ -1,6 +1,51 @@
+# Python & Environments
 venv/
+.venv/
+env/
 __pycache__/
-*.pyc
-.DS_Store
+*.py[cod]
+*$py.class
 *.egg-info/
+dist/
+build/
+
+# Operating System & IDE artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Environment Variables & Secrets
 .env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+cookies.txt
+*.cookies.txt
+
+
+# Media downloads & audio chunks
+downloades/
+downloads/
+*.wav
+*.webm
+*.mp3
+*.m4a
+*.mp4
+*.flac
+*.ogg
+
+# Vector DB & Local Storage
+vector_db/
+*.sqlite3
+*.sqlite3-journal
+
+# Audit Logs & Runtime Artifacts
+action_audit.jsonl
+*.log
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.early.coverage

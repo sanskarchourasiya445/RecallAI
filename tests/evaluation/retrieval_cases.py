@@ -1,0 +1,246 @@
+"""
+Phase 7 Retrieval & QA Evaluation Cases.
+Defines deterministic ground-truth test cases across 8 distinct categories:
+- direct_fact
+- paraphrased_fact
+- multi_fact
+- technical_terminology
+- numeric_date
+- cross_topic
+- unsupported (no-answer verification)
+- adversarial (false premise refusal)
+"""
+
+RETRIEVAL_CASES = [
+    # ═════════════════════════════════════════════════════════════════════════
+    # FIXTURE 1: Backend Platform Migration
+    # ═════════════════════════════════════════════════════════════════════════
+    {
+        "id": "f1_direct_fact_01",
+        "fixture_id": "fixture_1",
+        "category": "direct_fact",
+        "question": "Which database did the team decide to migrate to?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["PostgreSQL", "MySQL"],
+        "expected_answer_keywords": ["PostgreSQL"],
+        "ground_truth_fact": "The team decided to migrate from MySQL to PostgreSQL.",
+    },
+    {
+        "id": "f1_paraphrase_02",
+        "fixture_id": "fixture_1",
+        "category": "paraphrased_fact",
+        "question": "What relational storage engine did engineering choose for their transactional backend?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["PostgreSQL", "transactional"],
+        "expected_answer_keywords": ["PostgreSQL"],
+        "ground_truth_fact": "PostgreSQL was chosen for transactional storage.",
+    },
+    {
+        "id": "f1_multi_fact_03",
+        "fixture_id": "fixture_1",
+        "category": "multi_fact",
+        "question": "What tool was selected for connection management and what pool size was configured?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["PgBouncer", "50"],
+        "expected_answer_keywords": ["PgBouncer", "50"],
+        "ground_truth_fact": "PgBouncer was selected with a pool size of 50 connections.",
+    },
+    {
+        "id": "f1_tech_term_04",
+        "fixture_id": "fixture_1",
+        "category": "technical_terminology",
+        "question": "What version of Kubernetes will the production clusters be upgraded to?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["Kubernetes", "1.30"],
+        "expected_answer_keywords": ["1.30", "Kubernetes"],
+        "ground_truth_fact": "Kubernetes version 1.30 was decided for production clusters.",
+    },
+    {
+        "id": "f1_numeric_date_05",
+        "fixture_id": "fixture_1",
+        "category": "numeric_date",
+        "question": "When is Rahul's database migration plan due?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["Rahul", "Friday"],
+        "expected_answer_keywords": ["Friday", "5 PM"],
+        "ground_truth_fact": "Rahul will distribute the migration plan by Friday at 5 PM.",
+    },
+    {
+        "id": "f1_cross_topic_06",
+        "fixture_id": "fixture_1",
+        "category": "cross_topic",
+        "question": "What are the infrastructure upgrades planned across the database and container tiers?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["PostgreSQL", "Kubernetes"],
+        "expected_answer_keywords": ["PostgreSQL", "Kubernetes", "1.30"],
+        "ground_truth_fact": "Database migrating to PostgreSQL and Kubernetes upgrading to 1.30.",
+    },
+    {
+        "id": "f1_unsupported_07",
+        "fixture_id": "fixture_1",
+        "category": "unsupported",
+        "question": "What was the total infrastructure cloud spending budget for Q3?",
+        "expected_behavior": "no_answer",
+        "expected_evidence_keywords": [],
+        "expected_answer_keywords": ["could not find", "not mentioned", "not stated"],
+        "ground_truth_fact": "Budget is never discussed in the transcript.",
+    },
+    {
+        "id": "f1_unsupported_08",
+        "fixture_id": "fixture_1",
+        "category": "unsupported",
+        "question": "Who is the Chief Technology Officer of the company?",
+        "expected_behavior": "no_answer",
+        "expected_evidence_keywords": [],
+        "expected_answer_keywords": ["could not find", "not mentioned", "not stated"],
+        "ground_truth_fact": "CTO is never discussed in the transcript.",
+    },
+    {
+        "id": "f1_adversarial_09",
+        "fixture_id": "fixture_1",
+        "category": "adversarial",
+        "question": "Why did the team decide to hire an external contractor firm for the database cutover?",
+        "expected_behavior": "refuse_premise",
+        "expected_evidence_keywords": ["contractor", "in-house"],
+        "expected_answer_keywords": ["decided against", "did not hire", "rejected", "in-house"],
+        "ground_truth_fact": "The team decided against hiring external contractors.",
+    },
+    {
+        "id": "f1_adversarial_10",
+        "fixture_id": "fixture_1",
+        "category": "adversarial",
+        "question": "Which AWS region was officially chosen during the meeting, eu-west-1 or us-east-1?",
+        "expected_behavior": "refuse_premise",
+        "expected_evidence_keywords": ["eu-west-1", "us-east-1", "region"],
+        "expected_answer_keywords": ["no final AWS region was selected", "not selected", "unresolved"],
+        "ground_truth_fact": "No final AWS region was selected during the meeting.",
+    },
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FIXTURE 2: Billing & Payment Architecture
+    # ═════════════════════════════════════════════════════════════════════════
+    {
+        "id": "f2_direct_fact_01",
+        "fixture_id": "fixture_2",
+        "category": "direct_fact",
+        "question": "Which payment processor was chosen for European and US transactions?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["Stripe", "European"],
+        "expected_answer_keywords": ["Stripe"],
+        "ground_truth_fact": "Stripe was chosen for European and US transactions.",
+    },
+    {
+        "id": "f2_paraphrase_02",
+        "fixture_id": "fixture_2",
+        "category": "paraphrased_fact",
+        "question": "What gateway will handle Indian domestic payments and UPI?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["Razorpay", "Indian"],
+        "expected_answer_keywords": ["Razorpay"],
+        "ground_truth_fact": "Razorpay was selected for Indian rupee transactions and UPI.",
+    },
+    {
+        "id": "f2_numeric_date_03",
+        "fixture_id": "fixture_2",
+        "category": "numeric_date",
+        "question": "What is the automated refund turnaround SLA?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["refund", "24 hours"],
+        "expected_answer_keywords": ["24 hours"],
+        "ground_truth_fact": "Refund turnaround SLA is 24 hours.",
+    },
+    {
+        "id": "f2_numeric_date_04",
+        "fixture_id": "fixture_2",
+        "category": "numeric_date",
+        "question": "What is the deadline for the annual PCI-DSS Level 2 compliance audit?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["PCI-DSS", "October 25th"],
+        "expected_answer_keywords": ["October 25", "October 25th"],
+        "ground_truth_fact": "PCI-DSS audit deadline is October 25th.",
+    },
+    {
+        "id": "f2_tech_term_05",
+        "fixture_id": "fixture_2",
+        "category": "technical_terminology",
+        "question": "What will Priya implement for the Razorpay integration?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["Priya", "Razorpay", "webhook"],
+        "expected_answer_keywords": ["webhook", "signature verification", "payout"],
+        "ground_truth_fact": "Priya will implement Razorpay webhook signature verification and payout handlers.",
+    },
+    {
+        "id": "f2_unsupported_06",
+        "fixture_id": "fixture_2",
+        "category": "unsupported",
+        "question": "What percentage processing fee does Stripe charge per transaction?",
+        "expected_behavior": "no_answer",
+        "expected_evidence_keywords": [],
+        "expected_answer_keywords": ["could not find", "not mentioned", "not stated"],
+        "ground_truth_fact": "Stripe processing fee percentage is not stated in the transcript.",
+    },
+    {
+        "id": "f2_adversarial_07",
+        "fixture_id": "fixture_2",
+        "category": "adversarial",
+        "question": "Why did the team decide to support cryptocurrency payments via Coinbase?",
+        "expected_behavior": "refuse_premise",
+        "expected_evidence_keywords": ["cryptocurrency", "Coinbase"],
+        "expected_answer_keywords": ["decided not to", "rejected", "did not support", "not support"],
+        "ground_truth_fact": "The team firmly decided not to support cryptocurrency payments.",
+    },
+
+    # ═════════════════════════════════════════════════════════════════════════
+    # FIXTURE 3: Mobile App Performance & Client Architecture
+    # ═════════════════════════════════════════════════════════════════════════
+    {
+        "id": "f3_direct_fact_01",
+        "fixture_id": "fixture_3",
+        "category": "direct_fact",
+        "question": "What cold app start latency threshold was decided for release 4.2?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["cold app start", "1.8 seconds"],
+        "expected_answer_keywords": ["1.8 seconds", "under 1.8"],
+        "ground_truth_fact": "Cold app start threshold of under 1.8 seconds was decided.",
+    },
+    {
+        "id": "f3_tech_term_02",
+        "fixture_id": "fixture_3",
+        "category": "technical_terminology",
+        "question": "What version of React Native will the team upgrade to and which architecture features will be enabled?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["React Native", "0.74", "Fabric", "TurboModules"],
+        "expected_answer_keywords": ["0.74", "Fabric", "TurboModules", "New Architecture"],
+        "ground_truth_fact": "React Native 0.74 with New Architecture (Fabric and TurboModules).",
+    },
+    {
+        "id": "f3_direct_fact_03",
+        "fixture_id": "fixture_3",
+        "category": "direct_fact",
+        "question": "Why did the team switch from OneSignal to Firebase Cloud Messaging?",
+        "expected_behavior": "answer",
+        "expected_evidence_keywords": ["OneSignal", "Firebase", "pricing", "size"],
+        "expected_answer_keywords": ["pricing", "cost", "SDK size", "Firebase"],
+        "ground_truth_fact": "OneSignal pricing increased by 60% and SDK size added 4MB.",
+    },
+    {
+        "id": "f3_unsupported_04",
+        "fixture_id": "fixture_3",
+        "category": "unsupported",
+        "question": "What is the marketing budget for the 4.2 mobile release launch campaign?",
+        "expected_behavior": "no_answer",
+        "expected_evidence_keywords": [],
+        "expected_answer_keywords": ["could not find", "not mentioned", "not stated"],
+        "ground_truth_fact": "Marketing budget is never discussed in the transcript.",
+    },
+    {
+        "id": "f3_adversarial_05",
+        "fixture_id": "fixture_3",
+        "category": "adversarial",
+        "question": "Why did Elena approve rewriting the navigation layer in native SwiftUI and Jetpack Compose?",
+        "expected_behavior": "refuse_premise",
+        "expected_evidence_keywords": ["SwiftUI", "Jetpack Compose", "rejected"],
+        "expected_answer_keywords": ["rejected", "did not approve", "remain on React Native"],
+        "ground_truth_fact": "The native rewrite was rejected to avoid 4 months of delays.",
+    },
+]

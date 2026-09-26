@@ -15,12 +15,16 @@ torchvision>=0.17.0               # Required by transformers' optional image-pro
 # ── Translation (Hindi → English) ─────────────────────────────────────────────
 deep-translator>=1.11.4           # Lightweight translation wrapper (Google backend)
 
-# ── LLM Orchestration — LangChain LCEL + Mistral ──────────────────────────────
+# ── LLM Orchestration — LangChain, LangGraph & Gemini/Mistral ──────────────────
 langchain>=0.2.0
 langchain-core>=0.2.0
 langchain-community>=0.2.0
-langchain-mistralai>=0.1.0        # LangChain wrapper for Mistral API
-mistralai>=0.4.0                  # Official Mistral Python client
+langchain-google-genai>=2.0.0     # Modern Gemini API integration
+google-genai>=1.0.0               # Official Google GenAI SDK
+langgraph>=0.2.0                  # Explicit stateful workflow orchestration
+langchain-mistralai>=0.1.0        # LangChain wrapper for Mistral API fallback
+mistralai>=0.4.0                  # Mistral Python client fallback
+langfuse>=2.0.0                   # Optional lightweight observability and tracing
 
 # ── RAG Pipeline ──────────────────────────────────────────────────────────────
 chromadb>=0.5.0                   # Local vector store
@@ -30,6 +34,12 @@ langchain-huggingface>=0.0.3      # LangChain ↔ HuggingFace embeddings bridge
 huggingface-hub>=0.23.0           # Model downloading from HuggingFace Hub
 tiktoken>=0.7.0                   # Token counting for text splitting
 
+# ── FastAPI Backend API ───────────────────────────────────────────────────────
+fastapi>=0.111.0                  # Modern REST API framework
+uvicorn>=0.30.0                   # ASGI production server
+python-multipart>=0.0.9           # Form-data and file upload support
+httpx>=0.27.0                     # HTTP client for API testing and requests
+
 # ── Streamlit UI ──────────────────────────────────────────────────────────────
 streamlit>=1.35.0
 streamlit-extras>=0.4.0           # Additional Streamlit widgets / utilities
@@ -38,6 +48,9 @@ watchdog>=4.0.0                   # File-change watcher (improves Streamlit hot-
 # ── PDF & TXT Export ──────────────────────────────────────────────────────────
 reportlab>=4.2.0                  # PDF generation
 fpdf2>=2.7.9                      # Lightweight alternative PDF library
+
+# ── Text-to-Speech (TTS) ───────────────────────────────────────────────────────
+gtts>=2.5.0                       # Lightweight text-to-speech for voice answers
 
 # ── Utilities ─────────────────────────────────────────────────────────────────
 python-dotenv>=1.0.0              # Load API keys from .env
