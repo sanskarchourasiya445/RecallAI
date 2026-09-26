@@ -20,9 +20,9 @@ export function MediaPreview({
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 p-3.5 shadow-sm flex flex-col justify-between h-full">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-3 shadow-card flex flex-col justify-between h-full">
       {/* Thumbnail area with Play button & Duration badge */}
-      <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-slate-900 group cursor-pointer border border-slate-200/60 shadow-xs">
+      <div className="relative w-full aspect-[16/10] rounded-xl overflow-hidden bg-slate-900 group cursor-pointer border border-slate-200/60 shadow-2xs">
         {/* Meeting Image */}
         <img
           src={thumbnailUrl}
@@ -40,13 +40,13 @@ export function MediaPreview({
             if (onPlayClick) onPlayClick();
           }}
           aria-label="Play recording"
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/40 group-hover:scale-110 active:scale-95 transition-all"
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/30 group-hover:scale-110 active:scale-95 transition-all"
         >
-          <Play className="w-4 h-4 fill-white translate-x-0.5" />
+          <Play className="w-3.5 h-3.5 fill-white translate-x-0.5" />
         </button>
 
         {/* Duration badge on bottom right */}
-        <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-xs text-[10px] font-semibold text-white tracking-wide">
+        <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/75 backdrop-blur-2xs text-[10px] font-semibold text-white tracking-wide">
           {duration}
         </div>
       </div>
@@ -54,7 +54,7 @@ export function MediaPreview({
       {/* View Transcript Action Underneath */}
       <button
         onClick={onViewTranscript}
-        className="w-full mt-3 py-2 flex items-center justify-center gap-2 text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50/60 rounded-xl transition-colors"
+        className="w-full mt-2.5 h-7 flex items-center justify-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50/50 rounded-lg transition-colors"
       >
         <FileText className="w-3.5 h-3.5" />
         <span>View Transcript</span>

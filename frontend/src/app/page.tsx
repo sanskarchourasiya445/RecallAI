@@ -213,7 +213,7 @@ export default function RecallAIDashboard() {
       />
 
       {/* 7. MAIN SUMMARY + VIDEO AREA (approx 70% Summary / 30% Video) */}
-      <div className="grid grid-cols-1 lg:grid-cols-10 gap-3.5 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-10 gap-3 items-stretch">
         <div className="lg:col-span-7">
           <MeetingSummary
             summary={meetingData.summary}
@@ -229,7 +229,7 @@ export default function RecallAIDashboard() {
       </div>
 
       {/* 8. LOWER THREE-COLUMN INTELLIGENCE SECTION (Decisions, Action Items, Open Questions) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch">
         <DecisionsSection
           decisions={decisions}
           onViewAll={() => setActiveTab("decisions")}

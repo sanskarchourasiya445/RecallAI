@@ -33,12 +33,12 @@ export function DecisionsSection({
   onViewAll,
 }: DecisionsSectionProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-sm flex flex-col justify-between h-full">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-3.5 shadow-card flex flex-col justify-between h-full">
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <h3 className="text-xs font-bold text-slate-900 tracking-tight">
               Decisions
             </h3>
@@ -53,11 +53,11 @@ export function DecisionsSection({
         </div>
 
         {/* Decisions List */}
-        <div className="divide-y divide-slate-100 mt-2">
+        <div className="divide-y divide-slate-100">
           {decisions.map((item, idx) => (
-            <div key={idx} className="py-2.5 first:pt-1 last:pb-1 flex items-start gap-2.5">
+            <div key={idx} className="py-2.5 first:pt-2 last:pb-1 flex items-start gap-2.5">
               {/* Numbered Green Circle */}
-              <div className="w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+              <div className="w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 {idx + 1}
               </div>
 
@@ -67,9 +67,9 @@ export function DecisionsSection({
                 </p>
                 <div className="flex items-center justify-between gap-2 mt-1">
                   <span className="text-[11px] text-slate-400 font-normal">
-                    Based on: {item.timestamp || "12:34"} • {item.author || "Team"}
+                    Based on: {item.timestamp || "12:34"} · {item.author || "Team"}
                   </span>
-                  <span className="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[10px] font-semibold">
+                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[10px] font-semibold shrink-0">
                     {item.status || "Confirmed"}
                   </span>
                 </div>

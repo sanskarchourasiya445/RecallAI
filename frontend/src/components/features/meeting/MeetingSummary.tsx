@@ -20,22 +20,22 @@ export function MeetingSummary({
   onViewFullSummary,
 }: MeetingSummaryProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-sm flex flex-col justify-between h-full">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-card flex flex-col justify-between h-full">
       <div>
-        {/* Card Header: AI Sparkle + Title + Right Action */}
-        <div className="flex items-center justify-between gap-2 pb-3">
+        {/* Header: AI Sparkle + Title + Right Action */}
+        <div className="flex items-center justify-between gap-2 pb-2.5">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-indigo-600" />
-            <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+            <h3 className="text-[14px] font-bold text-slate-900 tracking-tight">
               Meeting Summary
             </h3>
           </div>
           <button
             onClick={onViewFullSummary}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+            className="inline-flex items-center gap-1 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
           >
             <span>View Full Summary</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3 h-3" />
           </button>
         </div>
 
@@ -45,13 +45,13 @@ export function MeetingSummary({
         </p>
 
         {/* Key Highlights Subheading */}
-        <div className="mt-4">
-          <h4 className="text-xs font-bold text-slate-900 mb-2">Key Highlights</h4>
-          <ul className="space-y-1.5">
+        <div className="mt-3">
+          <h4 className="text-xs font-bold text-slate-900 mb-1.5">Key Highlights</h4>
+          <ul className="space-y-1">
             {keyHighlights.map((highlight, idx) => (
-              <li key={idx} className="flex items-start gap-2 text-xs text-slate-600 leading-normal">
+              <li key={idx} className="flex items-start gap-2 text-xs text-slate-600 leading-snug">
                 {/* Purple dot bullet indicator */}
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1 shrink-0" />
                 <span>{highlight}</span>
               </li>
             ))}

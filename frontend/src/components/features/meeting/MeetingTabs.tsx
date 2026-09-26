@@ -37,8 +37,8 @@ export function MeetingTabs({ activeTab, onChangeTab }: MeetingTabsProps) {
   ];
 
   return (
-    <div className="w-full bg-white rounded-xl border border-slate-200/90 p-1.5 shadow-sm overflow-x-auto">
-      <div className="flex items-center gap-1.5 min-w-max">
+    <div className="w-full bg-white rounded-xl border border-slate-200/80 p-1 shadow-card">
+      <div className="flex items-center justify-between gap-1 w-full overflow-x-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -47,18 +47,18 @@ export function MeetingTabs({ activeTab, onChangeTab }: MeetingTabsProps) {
             <button
               key={tab.id}
               onClick={() => onChangeTab(tab.id)}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`flex-1 min-w-[95px] flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-medium transition-all ${
                 isActive
-                  ? "bg-indigo-600 text-white shadow-xs"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                  ? "bg-indigo-600 text-white font-semibold shadow-xs"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-50/80"
               }`}
             >
               <Icon
-                className={`w-3.5 h-3.5 ${
+                className={`w-3.5 h-3.5 shrink-0 ${
                   isActive ? "text-white" : "text-slate-400"
                 }`}
               />
-              <span>{tab.label}</span>
+              <span className="whitespace-nowrap">{tab.label}</span>
             </button>
           );
         })}
