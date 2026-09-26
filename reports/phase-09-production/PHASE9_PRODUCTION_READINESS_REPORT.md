@@ -134,7 +134,7 @@ Four purpose-built deployment assets were generated:
 2. **`packages.txt`**:
    - Contains `ffmpeg` for automatic native installation on Streamlit Community Cloud and Hugging Face Spaces.
 3. **`Dockerfile`**:
-   - `python:3.11-slim` base image.
+   - `python:3.12-slim` base image.
    - Installs `ffmpeg`, `curl`, `git`, and build essentials via `apt-get`.
    - Sets non-interactive environment and disables bytecode caching.
    - Includes standard Streamlit healthcheck probe (`http://localhost:8501/_stcore/health`).
