@@ -55,7 +55,7 @@ API_HOST: str = os.getenv("API_HOST", "0.0.0.0")
 API_PORT: int = int(os.getenv("API_PORT", "8000"))
 CORS_ORIGINS: list = [
     orig.strip()
-    for orig in os.getenv("CORS_ORIGINS", "http://localhost:8501,http://127.0.0.1:8501").split(",")
+    for orig in os.getenv("CORS_ORIGINS", "http://localhost:8501,http://127.0.0.1:8501,http://localhost:3000,http://127.0.0.1:3000").split(",")
     if orig.strip()
 ]
 

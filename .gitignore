@@ -49,3 +49,10 @@ action_audit.jsonl
 .coverage
 htmlcov/
 .early.coverage
+
+# Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/.env*.local
+openapi.json
