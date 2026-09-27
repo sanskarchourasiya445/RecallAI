@@ -132,14 +132,14 @@ export function QuickActions({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card p-3.5">
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card p-3 flex flex-col flex-[4] min-h-[220px] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-2 pb-1.5">
+      <div className="shrink-0 flex items-center gap-2 pb-1.5">
         <div className="w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
           <Zap className="w-3.5 h-3.5 text-blue-600 fill-blue-600" />
         </div>
         <div>
-          <h3 className="text-xs font-bold text-slate-900 leading-tight">
+          <h3 className="text-[14px] sm:text-[15px] font-bold text-slate-900 leading-tight">
             Quick Actions
           </h3>
           <p className="text-[11px] text-slate-400 font-normal">
@@ -149,7 +149,7 @@ export function QuickActions({
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-3 mt-2 border-b border-slate-100 text-xs">
+      <div className="shrink-0 flex items-center gap-3 mt-1.5 border-b border-slate-100 text-xs">
         <button
           onClick={() => setActiveTab("available")}
           className={`pb-1.5 font-semibold flex items-center gap-1.5 transition-all text-xs ${
@@ -182,13 +182,13 @@ export function QuickActions({
 
       {/* Feedback banner */}
       {statusMessage && (
-        <div className="mt-2 p-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-[10px] text-indigo-700 font-medium">
+        <div className="shrink-0 mt-1.5 p-1.5 rounded-lg bg-indigo-50 border border-indigo-100 text-[10px] text-indigo-700 font-medium">
           {statusMessage}
         </div>
       )}
 
-      {/* Tab Content: Compact 58-64px rows */}
-      <div className="mt-1.5">
+      {/* Tab Content: Compact rows with independent scroll */}
+      <div className="mt-1 flex-1 overflow-y-auto min-h-0">
         {activeTab === "available" ? (
           <div className="divide-y divide-slate-100">
             {tools.map((tool) => {
@@ -197,7 +197,7 @@ export function QuickActions({
                 <div
                   key={tool.id}
                   onClick={() => handleToolClick(tool.id)}
-                  className="h-[56px] flex items-center justify-between group cursor-pointer hover:bg-slate-50/70 rounded-xl px-2 transition-colors"
+                  className="h-[48px] flex items-center justify-between group cursor-pointer hover:bg-slate-50/70 rounded-xl px-2 transition-colors"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div
@@ -206,7 +206,7 @@ export function QuickActions({
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0 leading-tight">
-                      <p className="text-xs font-bold text-slate-800 truncate">
+                      <p className="text-[13px] font-semibold text-slate-800 truncate">
                         {tool.title}
                       </p>
                       <p className="text-[11px] text-slate-400 truncate mt-0.5">

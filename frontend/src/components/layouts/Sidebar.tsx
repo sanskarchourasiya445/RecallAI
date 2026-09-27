@@ -70,12 +70,16 @@ export function Sidebar({
         <div className="flex flex-col">
           {/* Header Row: Logo & Collapse / Close Controls */}
           <div
-            className={`flex items-center pt-1 pb-5 ${
-              isCollapsed ? "justify-center" : "justify-between px-1.5"
+            className={`flex items-center pt-1 pb-4 ${
+              isCollapsed ? "flex-col gap-2.5 justify-center items-center" : "justify-between px-1.5"
             }`}
           >
             {/* Logo Mark + Brand Text (if expanded) */}
-            <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              onClick={isCollapsed ? onToggleCollapse : undefined}
+              className={`flex items-center gap-2.5 min-w-0 ${isCollapsed ? "cursor-pointer" : ""}`}
+              title={isCollapsed ? "Expand sidebar" : undefined}
+            >
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center gap-[2.5px] p-1.5 shadow-md shadow-indigo-500/20 shrink-0">
                 <span className="w-[2.5px] h-3 bg-cyan-300 rounded-full animate-pulse" />
                 <span className="w-[2.5px] h-5 bg-white rounded-full" />
@@ -99,9 +103,7 @@ export function Sidebar({
             <button
               onClick={onToggleCollapse}
               title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-              className={`hidden md:flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:text-white hover:bg-[#16203a] transition-colors shrink-0 ${
-                isCollapsed ? "mt-2" : ""
-              }`}
+              className="hidden md:flex items-center justify-center w-6 h-6 rounded-md text-slate-400 hover:text-white hover:bg-[#16203a] transition-colors shrink-0"
             >
               {isCollapsed ? (
                 <ChevronRight className="w-4 h-4" />

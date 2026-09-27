@@ -113,22 +113,22 @@ export function SourcesSection({
             <div
               key={item.id}
               onClick={() => onOpenSource && onOpenSource(item)}
-              className="p-3 rounded-xl border border-slate-200/70 hover:border-slate-300 bg-white hover:bg-slate-50/50 cursor-pointer transition-all flex items-start justify-between gap-2.5 group shadow-2xs min-h-[72px]"
+              className="p-3.5 rounded-xl border border-slate-200/70 hover:border-slate-300 bg-white hover:bg-slate-50/50 cursor-pointer transition-all flex items-start justify-between gap-3 group shadow-2xs min-h-[84px]"
             >
-              <div className="flex items-start gap-2.5 min-w-0">
+              <div className="flex items-start gap-3 min-w-0 flex-1">
                 <div
                   className={`w-8 h-8 rounded-lg ${config.bg} flex items-center justify-center shrink-0 shadow-2xs mt-0.5`}
                 >
                   <Icon className="w-4 h-4" />
                 </div>
-                <div className="min-w-0 leading-tight">
-                  <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider leading-none">
                     {item.title}
                   </p>
-                  <p className="text-xs font-bold text-slate-800 leading-snug mt-0.5 break-words line-clamp-2">
+                  <h4 className="text-[13px] font-bold text-slate-900 leading-snug mt-1 min-h-[34px] line-clamp-2 break-words">
                     {item.subtitle}
-                  </p>
-                  <p className="text-[11px] text-slate-400 font-normal mt-0.5">
+                  </h4>
+                  <p className="text-[11px] text-slate-400 font-normal mt-1 leading-none">
                     {item.meta}
                   </p>
                 </div>

@@ -50,7 +50,7 @@ export default function RecallAIDashboard() {
   // Active meeting state
   const [meetingData, setMeetingData] = useState<MeetingDetailResponse>({
     session_id: "demo_backend_migration",
-    title: "Product Strategy Meeting",
+    title: "Backend Platform Migration & Cloud Infrastructure Sync",
     transcript: INITIAL_TRANSCRIPT,
     summary:
       "The team discussed the product roadmap for Q2, focusing on the new AI features, user experience improvements, and go-to-market strategy. Key topics included the timeline for the feature launch, resource allocation, and customer feedback from the beta program.",
@@ -132,6 +132,7 @@ export default function RecallAIDashboard() {
           setMeetingData((prev) => ({
             ...prev,
             session_id: demo.session_id,
+            title: demo.title || prev.title,
             transcript: demo.transcript || prev.transcript,
           }));
 
@@ -172,6 +173,7 @@ export default function RecallAIDashboard() {
 
   return (
     <AppShell
+      currentNav="meetings"
       onNewMeetingClick={() => setIsNewMeetingOpen(true)}
       onSearch={(q) => console.log("Global search:", q)}
       rightPanel={
@@ -201,8 +203,8 @@ export default function RecallAIDashboard() {
       {/* 6. FOUR INSIGHT CARDS */}
       <InsightCardsGrid
         summaryCount="Key points & insights"
-        decisionsCount={decisions.length || 3}
-        actionItemsCount={actionItems.length || 6}
+        decisionsCount={decisions.length || 4}
+        actionItemsCount={actionItems.length || 3}
         openQuestionsCount={openQuestions.length || 2}
         onSelectCard={(id) => {
           if (id === "summary") setActiveTab("summary");
@@ -229,7 +231,7 @@ export default function RecallAIDashboard() {
       </div>
 
       {/* 8. LOWER THREE-COLUMN INTELLIGENCE SECTION (Decisions, Action Items, Open Questions) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
         <DecisionsSection
           decisions={decisions}
           onViewAll={() => setActiveTab("decisions")}

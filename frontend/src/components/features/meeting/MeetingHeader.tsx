@@ -31,7 +31,7 @@ export function MeetingHeader({
   onDownload,
 }: MeetingHeaderProps) {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white via-indigo-50/20 to-blue-50/40 px-5 py-3.5 shadow-card min-h-[110px] max-h-[160px] flex items-center">
+    <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white via-indigo-50/20 to-blue-50/40 px-5 py-4 shadow-card min-h-[112px] flex items-center">
       {/* Abstract subtle flowing wave graphics on right background */}
       <div className="absolute right-0 top-0 bottom-0 w-2/5 pointer-events-none opacity-25">
         <svg
@@ -54,19 +54,19 @@ export function MeetingHeader({
 
       <div className="relative z-10 w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Left: Meeting Icon + Title + Metadata */}
-        <div className="flex items-center gap-3.5 min-w-0">
+        <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
           {/* Rounded square calendar icon container */}
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0 shadow-2xs mt-0.5 sm:mt-0">
             <Calendar className="w-5 h-5 text-indigo-600" />
           </div>
 
-          <div className="min-w-0">
-            <h2 className="text-lg sm:text-[19px] font-bold text-slate-900 tracking-tight leading-tight truncate">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-[22px] lg:text-[24px] font-bold text-slate-900 tracking-tight leading-snug line-clamp-2 break-words">
               {title}
-            </h2>
+            </h1>
 
             {/* Metadata row */}
-            <div className="flex flex-wrap items-center gap-3.5 mt-1 text-xs text-slate-500 font-normal">
+            <div className="flex flex-wrap items-center gap-3.5 mt-1 text-[12px] sm:text-[13px] text-slate-500 font-normal">
               <div className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 <span>{duration}</span>

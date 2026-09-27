@@ -128,15 +128,15 @@ export function AIChat({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card flex flex-col h-[460px]">
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card flex flex-col flex-[6] min-h-[320px] max-h-[65%] overflow-hidden">
       {/* Compact Header */}
-      <div className="px-3.5 py-3 border-b border-slate-100 flex items-center justify-between">
+      <div className="shrink-0 px-3.5 py-2.5 border-b border-slate-100 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 rounded-lg bg-indigo-50 flex items-center justify-center shrink-0">
             <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
           </div>
           <div>
-            <h3 className="text-xs font-bold text-slate-900 leading-tight">
+            <h3 className="text-[14px] sm:text-[15px] font-bold text-slate-900 leading-tight">
               AI Chat
             </h3>
             <p className="text-[11px] text-slate-400 font-normal">
@@ -213,7 +213,7 @@ export function AIChat({
       </div>
 
       {/* Fixed Chat Input Bar at Bottom */}
-      <div className="p-2.5 border-t border-slate-100 bg-white rounded-b-2xl">
+      <div className="shrink-0 p-2.5 border-t border-slate-100 bg-white rounded-b-2xl">
         <form
           onSubmit={(e) => {
             e.preventDefault();

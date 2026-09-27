@@ -7,12 +7,14 @@ interface TopBarProps {
   onSearch?: (query: string) => void;
   pendingNotificationsCount?: number;
   onOpenMobileMenu?: () => void;
+  onToggleMobileAI?: () => void;
 }
 
 export function TopBar({
   onSearch,
   pendingNotificationsCount = 1,
   onOpenMobileMenu,
+  onToggleMobileAI,
 }: TopBarProps) {
   const [searchVal, setSearchVal] = useState("");
 
@@ -54,7 +56,17 @@ export function TopBar({
       </div>
 
       {/* Top Right User Area */}
-      <div className="flex items-center gap-3 shrink-0">
+      <div className="flex items-center gap-2.5 shrink-0">
+        {/* Mobile/Tablet AI Assistant Drawer Trigger */}
+        <button
+          onClick={onToggleMobileAI}
+          aria-label="Toggle AI Assistant"
+          className="xl:hidden flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100/80 border border-indigo-200/70 text-indigo-700 text-xs font-semibold shadow-2xs transition-all active:scale-95"
+        >
+          <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+          <span className="hidden sm:inline">AI Chat</span>
+        </button>
+
         {/* Notification Bell */}
         <button
           aria-label="Notifications"
