@@ -33,6 +33,20 @@ export interface ChatResponse {
   pending_action_id?: string | null;
 }
 
+export interface ChatTurnItem {
+  turn_id: number;
+  user_message: string;
+  assistant_message: string;
+  evidence_ids?: string[];
+  resolved_query?: string | null;
+  timestamp?: string | null;
+}
+
+export interface ChatHistoryResponse {
+  session_id: string;
+  turns: ChatTurnItem[];
+}
+
 export interface UIMessage {
   id: string;
   sender: "user" | "ai";
@@ -43,4 +57,9 @@ export interface UIMessage {
   intent?: string;
   requiresConfirmation?: boolean;
   pendingActionId?: string | null;
+  isStreaming?: boolean;
+  actionStatus?: "pending" | "confirmed" | "rejected";
+  actionResult?: string;
+  error?: boolean;
 }
+

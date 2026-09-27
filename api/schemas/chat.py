@@ -43,3 +43,20 @@ class ChatResponse(BaseModel):
     refused: bool = Field(False, description="True if answer was refused due to missing/ungrounded evidence")
     requires_confirmation: bool = Field(False, description="True if action is consequential and staged")
     pending_action_id: Optional[str] = Field(None, description="ID of pending action if confirmation required")
+
+
+class ChatTurnItem(BaseModel):
+    """A conversational turn in session memory."""
+    turn_id: int
+    user_message: str
+    assistant_message: str
+    evidence_ids: List[str] = Field(default_factory=list)
+    resolved_query: Optional[str] = None
+    timestamp: Optional[str] = None
+
+
+class ChatHistoryResponse(BaseModel):
+    """Full conversational memory history for a meeting session."""
+    session_id: str
+    turns: List[ChatTurnItem] = Field(default_factory=list)
+

@@ -115,6 +115,54 @@ class TestChatEndpoints(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 422)
 
+    def test_chat_history_retrieval_and_clearing(self):
+        """Verify GET /api/v1/chat/history and DELETE /api/v1/chat/history."""
+        # 1. Ask a question to generate a turn
+        res = self.client.post(
+            "/api/v1/chat",
+            json={
+                "session_id": DEMO_SESSION_ID,
+                "message": "What database was chosen?",
+            },
+        )
+        self.assertEqual(res.status_code, 200)
+
+        # 2. Get history
+        hist_res = self.client.get(f"/api/v1/chat/history?session_id={DEMO_SESSION_ID}")
+        self.assertEqual(hist_res.status_code, 200)
+        hist_data = hist_res.json()
+        self.assertEqual(hist_data.get("session_id"), DEMO_SESSION_ID)
+        self.assertTrue(len(hist_data.get("turns", [])) >= 1)
+        first_turn = hist_data["turns"][0]
+        self.assertEqual(first_turn["user_message"], "What database was chosen?")
+        self.assertIsNotNone(first_turn["timestamp"])
+
+        # 3. Clear history
+        del_res = self.client.delete(f"/api/v1/chat/history?session_id={DEMO_SESSION_ID}")
+        self.assertEqual(del_res.status_code, 200)
+        self.assertTrue(del_res.json().get("cleared"))
+
+        # 4. Verify history is empty
+        hist_res2 = self.client.get(f"/api/v1/chat/history?session_id={DEMO_SESSION_ID}")
+        self.assertEqual(hist_res2.status_code, 200)
+        self.assertEqual(len(hist_res2.json().get("turns", [])), 0)
+
+    def test_chat_streaming(self):
+        """Verify POST /api/v1/chat/stream streams SSE events (metadata, tokens, done)."""
+        response = self.client.post(
+            "/api/v1/chat/stream",
+            json={
+                "session_id": DEMO_SESSION_ID,
+                "message": "Which database was selected?",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        content = response.text
+        self.assertIn("event: metadata", content)
+        self.assertIn("event: token", content)
+        self.assertIn("event: done", content)
+
 
 if __name__ == "__main__":
     unittest.main()
+

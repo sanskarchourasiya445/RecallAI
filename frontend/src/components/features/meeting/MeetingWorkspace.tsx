@@ -106,10 +106,17 @@ export function MeetingWorkspace({
       onSearch={(q) => console.log("Global search:", q)}
       rightPanel={
         <>
-          {/* AI Chat Card with interactive citations navigating to transcript */}
+          {/* AI Chat Card with conversation intelligence & interactive citations navigating to transcript */}
           <AIChat
             sessionId={meeting?.session_id || sessionId}
+            meetingTitle={meeting?.title}
+            meetingDuration={meeting?.duration}
+            meetingParticipantsCount={meeting?.participants_count}
+            decisions={decisions}
+            actionItems={actionItems}
+            openQuestions={openQuestions}
             onNavigateToTranscript={handleNavigateToTranscript}
+            onActionTriggered={() => refetch()}
           />
 
           {/* Quick Actions Card with live MCP Confirmation Gate */}
