@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { MeetingWorkspace } from "@/components/features/meeting/MeetingWorkspace";
 
 interface MeetingDetailPageProps {
@@ -8,5 +8,9 @@ interface MeetingDetailPageProps {
 }
 
 export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
-  return <MeetingWorkspace sessionId={params.sessionId} />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#F6F8FC]" />}>
+      <MeetingWorkspace sessionId={params.sessionId} />
+    </Suspense>
+  );
 }

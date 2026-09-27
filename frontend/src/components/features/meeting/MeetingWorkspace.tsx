@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { AppShell } from "@/components/layouts/AppShell";
 import { MeetingHeader } from "@/components/features/meeting/MeetingHeader";
 import { MeetingTabs, MeetingTabId } from "@/components/features/meeting/MeetingTabs";
@@ -27,11 +28,23 @@ export function MeetingWorkspace({
   sessionId = DEMO_SESSION_ID,
   initialTab = "overview",
 }: MeetingWorkspaceProps) {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<MeetingTabId>(initialTab);
   const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [isTranscriptOpen, setIsTranscriptOpen] = useState(false);
   const [targetTranscriptTime, setTargetTranscriptTime] = useState<string | null>(null);
   const [targetEvidenceId, setTargetEvidenceId] = useState<string | null>(null);
+
+  // Auto-deep-link if URL contains ?t=... or ?ev=...
+  useEffect(() => {
+    const t = searchParams?.get("t");
+    const ev = searchParams?.get("ev");
+    if (t || ev) {
+      setTargetTranscriptTime(t);
+      setTargetEvidenceId(ev);
+      setIsTranscriptOpen(true);
+    }
+  }, [searchParams]);
 
   const {
     meeting,

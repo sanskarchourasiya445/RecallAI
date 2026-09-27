@@ -201,6 +201,7 @@ def prepare_transcript_documents(
             "end_time": end_time_str,
             "time_range": time_range_str,
             "segment_ids": ",".join(map(str, seg_ids)),
+            "meeting_title": (extra_metadata or {}).get("meeting_title") or (extra_metadata or {}).get("title") or source or "Meeting",
         }
         if extra_metadata:
             meta.update(extra_metadata)

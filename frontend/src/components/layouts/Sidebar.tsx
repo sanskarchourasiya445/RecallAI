@@ -4,6 +4,7 @@ import React from "react";
 import {
   LayoutDashboard,
   Calendar,
+  Search,
   Video,
   MessageSquare,
   Zap,
@@ -38,6 +39,7 @@ export function Sidebar({
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "meetings", label: "Meetings", icon: Calendar },
+    { id: "search", label: "Global Search", icon: Search },
     { id: "upload", label: "Upload / YouTube", icon: Video },
     { id: "chat", label: "AI Chat", icon: MessageSquare },
     { id: "actions", label: "Actions", icon: Zap, badge: pendingActionsCount },

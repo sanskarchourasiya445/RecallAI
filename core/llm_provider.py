@@ -95,3 +95,15 @@ def redact_secrets(text: str) -> str:
         if val and val in clean:
             clean = clean.replace(val, "[REDACTED]")
     return clean
+
+
+def is_llm_configured() -> bool:
+    """Check if an active LLM API key (Gemini or Mistral) is configured and not placeholder."""
+    gemini_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or GEMINI_API_KEY
+    if gemini_key and not str(gemini_key).startswith("mock-") and gemini_key != "your_gemini_api_key_here":
+        return True
+    mistral_key = os.getenv("MISTRAL_API_KEY") or MISTRAL_API_KEY
+    if mistral_key and not str(mistral_key).startswith("mock-") and mistral_key != "your_mistral_api_key_here":
+        return True
+    return False
+

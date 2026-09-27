@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Search, Bell, ChevronDown, Menu } from "lucide-react";
 
 interface TopBarProps {
@@ -16,11 +17,29 @@ export function TopBar({
   onOpenMobileMenu,
   onToggleMobileAI,
 }: TopBarProps) {
+  const router = useRouter();
   const [searchVal, setSearchVal] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && onSearch) {
-      onSearch(searchVal);
+    if (e.key === "Enter") {
+      const trimmed = searchVal.trim();
+      if (onSearch) {
+        onSearch(trimmed);
+      } else if (trimmed) {
+        router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+      }
     }
   };
 
@@ -40,6 +59,7 @@ export function TopBar({
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
+            ref={inputRef}
             type="text"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}

@@ -330,3 +330,15 @@ def resolve_conversational_query(
         return f"{clean_q} regarding {target_subject}"
 
     return clean_q
+
+
+# Re-export Workspace Memory symbols
+from core.memory.workspace_memory import (
+    WorkspaceMemory,
+    DEFAULT_WORKSPACE_MEMORY,
+    WorkspaceDecision,
+    WorkspaceActionItem,
+    WorkspaceOpenQuestion,
+    WorkspaceEntityMention,
+)
+

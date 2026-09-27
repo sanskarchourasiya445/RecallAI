@@ -27,6 +27,7 @@ export function AppShell({
   const activeNav = useMemo(() => {
     if (currentNav) return currentNav;
     if (!pathname || pathname === "/") return "meetings";
+    if (pathname.startsWith("/search")) return "search";
     if (pathname.startsWith("/meetings")) return "meetings";
     if (pathname.startsWith("/actions")) return "actions";
     if (pathname.startsWith("/settings")) return "settings";
@@ -40,6 +41,8 @@ export function AppShell({
   const handleNavSelect = (navId: string) => {
     if (navId === "dashboard") {
       router.push("/");
+    } else if (navId === "search") {
+      router.push("/search");
     } else if (navId === "meetings") {
       router.push("/meetings");
     } else if (navId === "actions") {

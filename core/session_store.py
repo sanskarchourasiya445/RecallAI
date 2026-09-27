@@ -10,7 +10,13 @@ import threading
 from typing import Dict, Any, Optional, List
 
 from core.logger import get_logger
-from core.demo import load_demo_meeting, DEMO_SESSION_ID
+from core.demo import (
+    load_demo_meeting,
+    DEMO_SESSION_ID,
+    load_demo_meeting_2,
+    DEMO_SESSION_ID_2,
+    load_all_demo_meetings,
+)
 from utils.audio_processor import process_input, cleanup_temp_files
 from core.transcription import transcribe_all_with_segments
 from core.intelligence import (
@@ -79,11 +85,22 @@ class MeetingSessionStore:
                 self._sessions[session_id] = demo_data
                 return demo_data
 
+            if session_id == DEMO_SESSION_ID_2:
+                logger.info("Auto-loading demo meeting session 2 '%s'...", session_id)
+                demo_data = load_demo_meeting_2()
+                self._sessions[session_id] = demo_data
+                return demo_data
+
             return None
 
     def list_sessions(self) -> List[str]:
-        """Return list of all registered session IDs."""
+        """Return list of all registered session IDs. Auto-loads demo meetings if empty."""
         with self._lock:
+            if not self._sessions:
+                demo1 = load_demo_meeting()
+                self._sessions[DEMO_SESSION_ID] = demo1
+                demo2 = load_demo_meeting_2()
+                self._sessions[DEMO_SESSION_ID_2] = demo2
             return list(self._sessions.keys())
 
     def delete_session(self, session_id: str) -> bool:

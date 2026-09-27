@@ -150,6 +150,7 @@ def retrieve_evidence(vector_store, query: str, k: int = DEFAULT_K) -> list:
         source = doc.metadata.get("source", "meeting_transcript")
         source_type = doc.metadata.get("source_type", "meeting_transcript")
         session_id = doc.metadata.get("session_id", "")
+        meeting_title = doc.metadata.get("meeting_title", "Meeting")
 
         ev = RetrievedEvidence(
             evidence_id=f"E{e_idx}",
@@ -164,6 +165,7 @@ def retrieve_evidence(vector_store, query: str, k: int = DEFAULT_K) -> list:
             source_type=source_type,
             session_id=session_id,
             score=float(score) if score is not None else None,
+            meeting_title=meeting_title,
         )
         evidence_list.append(ev)
         print(f"  [{ev.evidence_id}] Chunk #{ev.chunk_index} ({ev.time_range}) (L2: {score:.4f}): \"{ev.text[:60]}...\"")

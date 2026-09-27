@@ -93,6 +93,7 @@ class RetrievedEvidence:
     source_type: str
     session_id: str
     score: Optional[float] = None
+    meeting_title: Optional[str] = None
 
     def to_dict(self) -> dict:
         return asdict(self)
