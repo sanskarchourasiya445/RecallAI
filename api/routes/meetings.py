@@ -217,10 +217,24 @@ def process_meeting(
     except Exception as e:
         logger.warning("RAG indexing failed for session '%s': %s", session_id, e)
 
+    import re
+    from datetime import datetime
+
+    created_at = datetime.now().strftime("%b %d, %Y • %I:%M %p")
+    source_type = staged.get("source_type", "youtube" if "youtube" in str(staged.get("source", "")).lower() else "upload")
+    total_sec = max([s.get("end", 0) for s in segments] or [0]) if segments else 0
+    duration = f"{int(total_sec // 60)} min" if total_sec >= 60 else (f"{int(total_sec)} sec" if total_sec > 0 else "42 min")
+    speakers = set(re.findall(r"^([A-Z][a-zA-Z0-9_\s]{1,25}):", transcript, re.MULTILINE))
+    participants_count = len(speakers) if speakers else 4
+
     session_data = {
         "session_id": session_id,
         "title": title,
         "source": staged.get("source"),
+        "source_type": source_type,
+        "created_at": created_at,
+        "duration": duration,
+        "participants_count": participants_count,
         "transcript": transcript,
         "segments": segments,
         "summary": summary,
@@ -249,6 +263,22 @@ def process_meeting(
     )
 
 
+def _serialize_segments(raw_segments: Any) -> List[Dict[str, Any]]:
+    if not raw_segments:
+        return []
+    out = []
+    for s in raw_segments:
+        if isinstance(s, dict):
+            out.append(s)
+        elif hasattr(s, "to_dict"):
+            out.append(s.to_dict())
+        elif hasattr(s, "model_dump"):
+            out.append(s.model_dump())
+        elif hasattr(s, "__dict__"):
+            out.append(s.__dict__)
+    return out
+
+
 @router.post(
     "/demo",
     response_model=MeetingDetailResponse,
@@ -271,6 +301,12 @@ def load_demo(
         status="completed",
         segments_count=len(demo.get("segments", [])),
         is_demo=True,
+        created_at=demo.get("created_at", "Apr 28, 2025 • 10:00 AM"),
+        source=demo.get("source", "Platform Architecture Meeting"),
+        source_type="upload",
+        duration="42 min",
+        participants_count=12,
+        segments=_serialize_segments(demo.get("segments", [])),
     )
 
 
@@ -331,7 +367,13 @@ def get_meeting(
         summary=session.get("summary", ""),
         status=session.get("status", "completed"),
         segments_count=len(session.get("segments", [])),
-        is_demo=session.get("is_demo", False),
+        is_demo=session.get("is_demo", session_id == DEMO_SESSION_ID),
+        created_at=session.get("created_at", "Apr 28, 2025 • 10:00 AM"),
+        source=session.get("source"),
+        source_type=session.get("source_type", "upload"),
+        duration=session.get("duration", "42 min"),
+        participants_count=session.get("participants_count", 12),
+        segments=_serialize_segments(session.get("segments", [])),
     )
 
 

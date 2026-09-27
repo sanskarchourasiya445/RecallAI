@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, Bot, Loader2 } from "lucide-react";
+import { Sparkles, Send, Bot, Loader2, ArrowUpRight } from "lucide-react";
 import { UIMessage } from "@/types/chat";
 import { sendChatMessage } from "@/lib/api/chat";
 
@@ -9,6 +9,7 @@ interface AIChatProps {
   sessionId?: string;
   initialMessages?: UIMessage[];
   onActionTriggered?: (actionId: string) => void;
+  onNavigateToTranscript?: (timestamp: string, evidenceId?: string) => void;
 }
 
 const DEFAULT_MESSAGES: UIMessage[] = [
@@ -56,6 +57,7 @@ export function AIChat({
   sessionId = "demo_backend_migration",
   initialMessages = DEFAULT_MESSAGES,
   onActionTriggered,
+  onNavigateToTranscript,
 }: AIChatProps) {
   const [messages, setMessages] = useState<UIMessage[]>(initialMessages);
   const [inputVal, setInputVal] = useState("");
@@ -126,11 +128,10 @@ export function AIChat({
       const errText = err instanceof Error ? err.message : "Backend unavailable";
       setErrorMsg(errText);
 
-      // Add informative message
       const fallbackMsg: UIMessage = {
         id: `ai-${Date.now()}`,
         sender: "ai",
-        content: `I could not reach the live RAG backend (${errText}). If the meeting is still indexing or server is starting up, please try again shortly.`,
+        content: `Error communicating with AI intelligence server: ${errText}. Please verify the meeting status and retry.`,
         timestamp: aiTime,
       };
 
@@ -153,7 +154,7 @@ export function AIChat({
               AI Chat
             </h3>
             <p className="text-[11px] text-slate-400 font-normal">
-              Ask questions about this meeting
+              Ask questions grounded in meeting transcript
             </p>
           </div>
         </div>
@@ -189,20 +190,27 @@ export function AIChat({
                 <div className="rounded-2xl rounded-tl-xs bg-slate-50 border border-slate-200/70 p-2.5 text-xs text-slate-700 leading-relaxed shadow-2xs whitespace-pre-line">
                   {msg.content}
 
-                  {/* Grounded Citations if present */}
+                  {/* Interactive Grounded Citations */}
                   {msg.citations && msg.citations.length > 0 && (
-                    <div className="mt-2 pt-1.5 border-t border-slate-200/60 flex flex-wrap gap-1">
-                      <span className="text-[10px] text-slate-400 font-medium">
-                        Citations:
-                      </span>
-                      {msg.citations.map((c, i) => (
-                        <span
-                          key={i}
-                          className="px-1.5 py-0.2 rounded bg-indigo-50 border border-indigo-200 text-indigo-700 text-[10px] font-semibold"
-                        >
-                          [{c.evidence_id}] {c.time_range}
-                        </span>
-                      ))}
+                    <div className="mt-2.5 pt-2 border-t border-slate-200/70">
+                      <p className="text-[10px] text-slate-400 font-bold mb-1 uppercase tracking-wider">
+                        Grounded Citations:
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {msg.citations.map((c, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => onNavigateToTranscript?.(c.time_range, c.evidence_id)}
+                            title={`Jump to transcript timestamp: ${c.time_range}`}
+                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-[10px] font-semibold cursor-pointer transition-all active:scale-95 shadow-2xs"
+                          >
+                            <span>[{c.evidence_id}]</span>
+                            <span className="font-mono">{c.time_range}</span>
+                            <ArrowUpRight className="w-2.5 h-2.5 opacity-60" />
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

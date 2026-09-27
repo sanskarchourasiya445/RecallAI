@@ -4,11 +4,18 @@ import { useState, useEffect, useCallback, useMemo } from "react";
 import { MeetingListItem } from "@/types/meeting";
 import { listMeetings } from "@/lib/api/meetings";
 
+export type MeetingSortOption = "newest" | "oldest" | "title" | "actions" | "decisions";
+export type MeetingSourceFilter = "all" | "youtube" | "upload";
+
 export interface UseMeetingsListReturn {
   meetings: MeetingListItem[];
   filteredMeetings: MeetingListItem[];
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  sortBy: MeetingSortOption;
+  setSortBy: (sort: MeetingSortOption) => void;
+  filterSource: MeetingSourceFilter;
+  setFilterSource: (filter: MeetingSourceFilter) => void;
   isLoading: boolean;
   isError: boolean;
   errorMessage: string | null;
@@ -18,6 +25,8 @@ export interface UseMeetingsListReturn {
 export function useMeetingsList(): UseMeetingsListReturn {
   const [meetings, setMeetings] = useState<MeetingListItem[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<MeetingSortOption>("newest");
+  const [filterSource, setFilterSource] = useState<MeetingSourceFilter>("all");
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -48,8 +57,8 @@ export function useMeetingsList(): UseMeetingsListReturn {
           participants_count: 12,
           summary_preview:
             "The team discussed the product roadmap for Q2, focusing on the new AI features, user experience improvements, and go-to-market strategy...",
-          decisions_count: 3,
-          actions_count: 4,
+          decisions_count: 4,
+          actions_count: 3,
           open_questions_count: 2,
           is_demo: true,
         },
@@ -64,21 +73,57 @@ export function useMeetingsList(): UseMeetingsListReturn {
   }, [fetchMeetings]);
 
   const filteredMeetings = useMemo(() => {
-    if (!searchQuery.trim()) return meetings;
-    const query = searchQuery.toLowerCase();
-    return meetings.filter(
-      (m) =>
-        m.title.toLowerCase().includes(query) ||
-        (m.source && m.source.toLowerCase().includes(query)) ||
-        (m.summary_preview && m.summary_preview.toLowerCase().includes(query))
-    );
-  }, [meetings, searchQuery]);
+    let result = [...meetings];
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(
+        (m) =>
+          m.title.toLowerCase().includes(query) ||
+          (m.source && m.source.toLowerCase().includes(query)) ||
+          (m.summary_preview && m.summary_preview.toLowerCase().includes(query))
+      );
+    }
+
+    // Filter by source type
+    if (filterSource !== "all") {
+      result = result.filter((m) => {
+        const type = m.source_type?.toLowerCase() || (m.source?.toLowerCase().includes("youtube") ? "youtube" : "upload");
+        return type === filterSource;
+      });
+    }
+
+    // Sort
+    result.sort((a, b) => {
+      if (sortBy === "title") {
+        return a.title.localeCompare(b.title);
+      }
+      if (sortBy === "actions") {
+        return (b.actions_count || 0) - (a.actions_count || 0);
+      }
+      if (sortBy === "decisions") {
+        return (b.decisions_count || 0) - (a.decisions_count || 0);
+      }
+      if (sortBy === "oldest") {
+        return (a.created_at || "").localeCompare(b.created_at || "");
+      }
+      // default newest
+      return (b.created_at || "").localeCompare(a.created_at || "");
+    });
+
+    return result;
+  }, [meetings, searchQuery, filterSource, sortBy]);
 
   return {
     meetings,
     filteredMeetings,
     searchQuery,
     setSearchQuery,
+    sortBy,
+    setSortBy,
+    filterSource,
+    setFilterSource,
     isLoading,
     isError,
     errorMessage,

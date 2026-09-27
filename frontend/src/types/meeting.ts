@@ -32,6 +32,13 @@ export interface MeetingSource {
   url?: string;
 }
 
+export interface MeetingSegment {
+  start: number;
+  end: number;
+  text: string;
+  speaker?: string;
+}
+
 export interface MeetingDetailResponse {
   session_id: string;
   title: string;
@@ -40,6 +47,12 @@ export interface MeetingDetailResponse {
   status: string;
   segments_count?: number;
   is_demo?: boolean;
+  created_at?: string;
+  source?: string;
+  source_type?: string;
+  duration?: string;
+  participants_count?: number;
+  segments?: MeetingSegment[];
 }
 
 export interface MeetingProcessResponse {

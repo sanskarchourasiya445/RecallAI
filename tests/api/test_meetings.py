@@ -97,6 +97,17 @@ class TestMeetingEndpoints(unittest.TestCase):
         data = response.json()
         self.assertIn("Invalid YouTube URL", data.get("error", ""))
 
+    def test_list_meetings(self):
+        """Verify GET /api/v1/meetings returns a list of sessions including demo."""
+        response = self.client.get("/api/v1/meetings")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIsInstance(data, list)
+        self.assertTrue(len(data) >= 1)
+        demo_item = next((item for item in data if item["session_id"] == DEMO_SESSION_ID), None)
+        self.assertIsNotNone(demo_item)
+        self.assertEqual(demo_item["status"], "completed")
+
 
 if __name__ == "__main__":
     unittest.main()

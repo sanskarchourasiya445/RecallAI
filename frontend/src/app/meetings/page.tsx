@@ -6,7 +6,7 @@ import { AppShell } from "@/components/layouts/AppShell";
 import { AIChat } from "@/components/features/chat/AIChat";
 import { QuickActions } from "@/components/features/actions/QuickActions";
 import { NewMeetingModal } from "@/components/features/meeting/NewMeetingModal";
-import { useMeetingsList } from "@/lib/hooks/useMeetingsList";
+import { useMeetingsList, MeetingSortOption } from "@/lib/hooks/useMeetingsList";
 import {
   Calendar,
   Clock,
@@ -22,6 +22,7 @@ import {
   RefreshCw,
   AlertCircle,
   FileText,
+  SlidersHorizontal,
 } from "lucide-react";
 
 export default function MeetingsPage() {
@@ -30,6 +31,10 @@ export default function MeetingsPage() {
     filteredMeetings,
     searchQuery,
     setSearchQuery,
+    sortBy,
+    setSortBy,
+    filterSource,
+    setFilterSource,
     isLoading,
     isError,
     errorMessage,
@@ -62,18 +67,18 @@ export default function MeetingsPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight">
-                  Meeting Sessions
+                  Meeting Sessions Directory
                 </h1>
                 <p className="text-xs text-slate-400 font-normal">
-                  All indexed recordings, extracted decisions, and actionable intelligence
+                  Real indexed recordings, decisions, action plans & multi-modal intelligence
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             {/* Search Input */}
-            <div className="relative w-full sm:w-64">
+            <div className="relative w-full sm:w-56">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
@@ -82,6 +87,22 @@ export default function MeetingsPage() {
                 placeholder="Search meetings, topics..."
                 className="w-full h-9 pl-9 pr-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 transition-all"
               />
+            </div>
+
+            {/* Sort Select */}
+            <div className="relative flex items-center">
+              <SlidersHorizontal className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 pointer-events-none" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as MeetingSortOption)}
+                className="h-9 pl-8 pr-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:border-indigo-500 transition-all"
+              >
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="title">Title (A-Z)</option>
+                <option value="actions">Most Action Items</option>
+                <option value="decisions">Most Decisions</option>
+              </select>
             </div>
 
             {/* Refresh */}
@@ -104,12 +125,54 @@ export default function MeetingsPage() {
           </div>
         </div>
 
+        {/* Source Filters Bar */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl text-xs font-semibold">
+            <button
+              onClick={() => setFilterSource("all")}
+              className={`px-3 py-1 rounded-lg transition-all ${
+                filterSource === "all"
+                  ? "bg-white text-slate-900 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              All Sources
+            </button>
+            <button
+              onClick={() => setFilterSource("youtube")}
+              className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
+                filterSource === "youtube"
+                  ? "bg-white text-rose-600 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              <Video className="w-3.5 h-3.5" />
+              <span>YouTube</span>
+            </button>
+            <button
+              onClick={() => setFilterSource("upload")}
+              className={`px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 ${
+                filterSource === "upload"
+                  ? "bg-white text-indigo-600 shadow-xs"
+                  : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              <FileAudio className="w-3.5 h-3.5" />
+              <span>Uploads</span>
+            </button>
+          </div>
+
+          <span className="text-xs text-slate-400 font-normal">
+            Showing <strong>{filteredMeetings.length}</strong> meeting{filteredMeetings.length === 1 ? "" : "s"}
+          </span>
+        </div>
+
         {/* Quick Stats Metrics Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <div className="bg-white rounded-xl border border-slate-200/80 p-3.5 shadow-2xs">
-            <p className="text-[11px] font-medium text-slate-400">Total Indexed</p>
+            <p className="text-[11px] font-medium text-slate-400">Total Sessions</p>
             <p className="text-xl font-bold text-slate-900 mt-0.5">
-              {filteredMeetings.length} <span className="text-xs font-normal text-slate-400">sessions</span>
+              {filteredMeetings.length} <span className="text-xs font-normal text-slate-400">indexed</span>
             </p>
           </div>
           <div className="bg-white rounded-xl border border-slate-200/80 p-3.5 shadow-2xs">
@@ -175,8 +238,8 @@ export default function MeetingsPage() {
             <h3 className="text-base font-bold text-slate-800">No meeting sessions found</h3>
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               {searchQuery
-                ? `No meetings match "${searchQuery}". Try searching for another keyword or clear search.`
-                : "You haven't ingested any meetings yet. Ingest your first recording or load the demo workspace!"}
+                ? `No meetings match "${searchQuery}". Try another keyword or reset filters.`
+                : "No meetings found in this view. Ingest a recording or load the demo workspace!"}
             </p>
             <button
               onClick={() => setIsNewMeetingOpen(true)}
@@ -266,7 +329,7 @@ export default function MeetingsPage() {
                     </div>
 
                     <div className="flex items-center text-xs font-semibold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
-                      <span>Open</span>
+                      <span>Open Workspace</span>
                       <ArrowRight className="w-3.5 h-3.5 ml-1" />
                     </div>
                   </div>

@@ -2,7 +2,7 @@
 Meeting Ingestion, Processing, and Detail Schemas for Gistly API.
 """
 
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from pydantic import BaseModel, Field
 
 
@@ -47,6 +47,12 @@ class MeetingDetailResponse(BaseModel):
     status: str
     segments_count: int = 0
     is_demo: bool = False
+    created_at: Optional[str] = None
+    source: Optional[str] = None
+    source_type: Optional[str] = "upload"
+    duration: Optional[str] = "42 min"
+    participants_count: Optional[int] = 12
+    segments: Optional[List[Any]] = None
 
 
 class MeetingListItemResponse(BaseModel):

@@ -220,11 +220,11 @@ class ConfirmationManager:
             source_session_id=session_id,
         )
 
-    def get_pending_actions(self, session_id: str) -> List[PendingAction]:
-        """Get all active pending actions for a session."""
+    def get_pending_actions(self, session_id: Optional[str] = None) -> List[PendingAction]:
+        """Get all active pending actions for a session, or all pending if session_id is None."""
         return [
             a for a in self._pending.values()
-            if a.session_id == session_id and a.status == "pending" and not a.is_expired()
+            if (session_id is None or a.session_id == session_id) and a.status == "pending" and not a.is_expired()
         ]
 
     def get_audit_history(self, session_id: Optional[str] = None) -> List[ActionExecution]:

@@ -30,6 +30,8 @@ export function MeetingWorkspace({
   const [activeTab, setActiveTab] = useState<MeetingTabId>(initialTab);
   const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [isTranscriptOpen, setIsTranscriptOpen] = useState(false);
+  const [targetTranscriptTime, setTargetTranscriptTime] = useState<string | null>(null);
+  const [targetEvidenceId, setTargetEvidenceId] = useState<string | null>(null);
 
   const {
     meeting,
@@ -47,8 +49,16 @@ export function MeetingWorkspace({
   const handleTabChange = (tab: MeetingTabId) => {
     setActiveTab(tab);
     if (tab === "transcript") {
+      setTargetTranscriptTime(null);
+      setTargetEvidenceId(null);
       setIsTranscriptOpen(true);
     }
+  };
+
+  const handleNavigateToTranscript = (timestamp: string, evidenceId?: string) => {
+    setTargetTranscriptTime(timestamp);
+    setTargetEvidenceId(evidenceId || null);
+    setIsTranscriptOpen(true);
   };
 
   const handleDownload = () => {
@@ -58,7 +68,9 @@ export function MeetingWorkspace({
         `RECALLAI INTELLIGENCE REPORT\n`,
         `============================\n`,
         `Title: ${meeting.title}\n`,
-        `Session ID: ${meeting.session_id}\n\n`,
+        `Session ID: ${meeting.session_id}\n`,
+        `Recorded Date: ${meeting.created_at || "N/A"}\n`,
+        `Duration: ${meeting.duration || "N/A"}\n\n`,
         `SUMMARY\n-------\n${meeting.summary}\n\n`,
         `KEY DECISIONS (${decisions.length})\n------------------\n`,
         ...decisions.map((d, i) => `${i + 1}. ${d.decision} [${d.timestamp || ""}]\n`),
@@ -68,13 +80,14 @@ export function MeetingWorkspace({
         ),
         `\nOPEN QUESTIONS (${openQuestions.length})\n-------------------\n`,
         ...openQuestions.map((q, i) => `${i + 1}. ${q.question} (By: ${q.author || "Team"})\n`),
+        `\nTRANSCRIPT\n----------\n${meeting.transcript}\n`,
       ],
       { type: "text/plain;charset=utf-8" }
     );
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `recallai-${meeting.session_id}-report.txt`;
+    a.download = `recallai-${meeting.session_id}-intelligence.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -93,10 +106,13 @@ export function MeetingWorkspace({
       onSearch={(q) => console.log("Global search:", q)}
       rightPanel={
         <>
-          {/* AI Chat Card */}
-          <AIChat sessionId={meeting?.session_id || sessionId} />
+          {/* AI Chat Card with interactive citations navigating to transcript */}
+          <AIChat
+            sessionId={meeting?.session_id || sessionId}
+            onNavigateToTranscript={handleNavigateToTranscript}
+          />
 
-          {/* Quick Actions Card */}
+          {/* Quick Actions Card with live MCP Confirmation Gate */}
           <QuickActions
             sessionId={meeting?.session_id || sessionId}
             pendingCount={3}
@@ -125,7 +141,7 @@ export function MeetingWorkspace({
 
       {/* Error Banner with Retry */}
       {isError && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center justify-between gap-3">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-center justify-between gap-3 shadow-2xs">
           <div className="flex items-center gap-2.5 min-w-0">
             <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
             <div>
@@ -146,9 +162,9 @@ export function MeetingWorkspace({
       {/* 4. MEETING HEADER */}
       <MeetingHeader
         title={meeting?.title || "Product Strategy Meeting"}
-        duration="42 min"
-        participantsCount={12}
-        dateStr="Apr 28, 2025 • 10:00 AM"
+        duration={meeting?.duration || "42 min"}
+        participantsCount={meeting?.participants_count || 12}
+        dateStr={meeting?.created_at || "Apr 28, 2025 • 10:00 AM"}
         status={meeting?.status || "Completed"}
         isLoading={isLoading}
         onShare={handleShare}
@@ -184,8 +200,12 @@ export function MeetingWorkspace({
         </div>
         <div className="lg:col-span-3">
           <MediaPreview
-            duration="42:15"
-            onViewTranscript={() => setIsTranscriptOpen(true)}
+            duration={meeting?.duration || "42:15"}
+            onViewTranscript={() => {
+              setTargetTranscriptTime(null);
+              setTargetEvidenceId(null);
+              setIsTranscriptOpen(true);
+            }}
           />
         </div>
       </div>
@@ -214,7 +234,11 @@ export function MeetingWorkspace({
       <SourcesSection
         onViewAll={() => setActiveTab("sources")}
         onOpenSource={(src) => {
-          if (src.type === "transcript") setIsTranscriptOpen(true);
+          if (src.type === "transcript") {
+            setTargetTranscriptTime(null);
+            setTargetEvidenceId(null);
+            setIsTranscriptOpen(true);
+          }
         }}
       />
 
@@ -231,10 +255,14 @@ export function MeetingWorkspace({
         isOpen={isTranscriptOpen}
         onClose={() => {
           setIsTranscriptOpen(false);
+          setTargetTranscriptTime(null);
+          setTargetEvidenceId(null);
           if (activeTab === "transcript") setActiveTab("overview");
         }}
         transcript={meeting?.transcript || ""}
         title={`${meeting?.title || "Meeting"} — Transcript`}
+        targetTimestamp={targetTranscriptTime}
+        targetEvidenceId={targetEvidenceId}
       />
     </AppShell>
   );
