@@ -27,7 +27,7 @@ class TestHealthEndpoints(unittest.TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data.get("service"), "gistly-api")
+        self.assertEqual(data.get("service"), "recallai-api")
         self.assertEqual(data.get("api_v1_prefix"), "/api/v1")
         self.assertEqual(data.get("docs_url"), "/docs")
 
@@ -37,7 +37,7 @@ class TestHealthEndpoints(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertIn(data.get("status"), ("ok", "degraded"))
-        self.assertEqual(data.get("service"), "gistly-api")
+        self.assertEqual(data.get("service"), "recallai-api")
         self.assertEqual(data.get("version"), "1.0.0")
         self.assertIn("llm_provider", data)
         self.assertIn("embedding_provider", data)

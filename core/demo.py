@@ -1,5 +1,5 @@
 """
-Demo Meeting Module for Jitsly / Gistly.
+Demo Meeting Module for RecallAI.
 Provides instant, zero-API-key offline demonstration capabilities.
 Allows evaluators, recruiters, and developers to explore the full
 Meeting Intelligence Workspace, action item registers, decisions,

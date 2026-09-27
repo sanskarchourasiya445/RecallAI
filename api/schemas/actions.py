@@ -1,5 +1,5 @@
 """
-Controlled Action and Confirmation Schemas for Gistly API.
+Controlled Action and Confirmation Schemas for RecallAI API.
 """
 
 from typing import Dict, Any, Optional, List

@@ -11,8 +11,23 @@ import sys
 import json
 import urllib.request
 import urllib.parse
+import pytest
 
 BASE_URL = "http://127.0.0.1:8000"
+
+
+def setup_module():
+    """Skip E2E tests if the backend server is not running."""
+    try:
+        req = urllib.request.Request(f"{BASE_URL}/api/v1/health")
+        with urllib.request.urlopen(req, timeout=2) as resp:
+            if resp.status != 200:
+                pytest.skip("Backend server not healthy", allow_module_level=True)
+    except Exception:
+        pytest.skip(
+            f"Backend server not running at {BASE_URL} (E2E tests require running server)",
+            allow_module_level=True,
+        )
 
 
 def test_meetings_loaded():

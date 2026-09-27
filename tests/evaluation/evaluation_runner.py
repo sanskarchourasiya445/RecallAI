@@ -1,6 +1,6 @@
 """
 Phase 7 Evaluation Runner.
-Executes comprehensive evaluation of Jitsly's:
+Executes comprehensive evaluation of RecallAI's:
 1. Retrieval relevance (Recall@K, Precision@K for K in [2, 4, 6, 8])
 2. Grounded QA behavior (Answerable, Unsupported, False-Premise)
 3. Citation and evidence provenance correctness
@@ -653,9 +653,9 @@ class EvaluationHarness:
             rec_4 = data[4]["hits"] / max(1, data[4]["total"]) * 100
             cat_rows.append(f"| `{cat}` | {data[4]['hits']}/{data[4]['total']} ({rec_4:.1f}%) |")
 
-        report_content = f"""# JITSLY — PHASE 7: EVALUATION & RETRIEVAL INTELLIGENCE REPORT
+        report_content = f"""# RECALLAI — PHASE 7: EVALUATION & RETRIEVAL INTELLIGENCE REPORT
 
-**Project**: Jitsly / Gistly — AI Meeting & Video Intelligence Assistant  
+**Project**: RecallAI — AI Meeting & Video Intelligence Assistant  
 **Date**: September 26, 2026  
 **Phase**: Phase 7 — Evaluation & Retrieval Intelligence  
 **Evaluation Mode**: **DETERMINISTIC EVALUATION SUITE**  
@@ -664,7 +664,7 @@ class EvaluationHarness:
 
 ## 1. Executive Summary
 
-Phase 7 establishes a lightweight, explainable, and reproducible evaluation framework for Jitsly.
+Phase 7 establishes a lightweight, explainable, and reproducible evaluation framework for RECALLAI.
 The system measures actual information retrieval and grounded intelligence performance over a multi-fixture meeting dataset.
 
 No accuracy figures or benchmark numbers have been fabricated. All metrics below represent empirical observations across the Phase 7 evaluation fixtures.

@@ -21,11 +21,9 @@ class TestDeploymentReadiness(unittest.TestCase):
     """Tests verifying production guardrails and diagnostic endpoints."""
 
     def setUp(self):
-        import httpx
-        self.client = httpx.Client(base_url=BASE_URL, timeout=15)
-
-    def tearDown(self):
-        self.client.close()
+        from fastapi.testclient import TestClient
+        from api.main import app
+        self.client = TestClient(app, raise_server_exceptions=False)
 
     def test_media_extension_validation_guardrails(self):
         """Test validate_media_file_extension with valid and malicious extensions."""

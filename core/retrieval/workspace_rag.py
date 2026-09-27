@@ -20,7 +20,7 @@ from core.retrieval.provenance import (
 )
 from core.memory.workspace_memory import DEFAULT_WORKSPACE_MEMORY, WorkspaceMemory
 
-logger = get_logger("gistly.workspace_rag")
+logger = get_logger("recallai.workspace_rag")
 
 STOP_WORDS = {
     "what", "when", "where", "which", "who", "whom", "whose", "why", "how",

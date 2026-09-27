@@ -1,5 +1,5 @@
 """
-Meeting Intelligence Structured Output Schemas for Gistly API.
+Meeting Intelligence Structured Output Schemas for RecallAI API.
 Directly reuses core ActionItem, DecisionItem, and OpenQuestionItem models.
 """
 

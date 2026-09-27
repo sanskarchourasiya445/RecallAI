@@ -39,7 +39,7 @@ from api.schemas.intelligence import (
     OpenQuestionsResponse,
 )
 
-logger = get_logger("gistly.api.meetings")
+logger = get_logger("recallai.api.meetings")
 router = APIRouter(prefix="/meetings", tags=["Meetings"])
 
 

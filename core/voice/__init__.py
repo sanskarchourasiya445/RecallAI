@@ -1,5 +1,5 @@
 """
-Voice interaction package for Gistly / RecallAI.
+Voice interaction package for RecallAI.
 Provides:
   - Voice input transcription (STT via Whisper / Sarvam)
   - Synthesized spoken answer audio (TTS via gTTS)

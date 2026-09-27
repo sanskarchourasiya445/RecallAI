@@ -12,7 +12,7 @@ from api.dependencies import get_session_store
 from core.retrieval.workspace_rag import search_workspace
 from api.schemas.search import GlobalSearchResponse, SearchResultItem
 
-logger = get_logger("gistly.api.search")
+logger = get_logger("recallai.api.search")
 router = APIRouter(prefix="/search", tags=["Global Search"])
 
 

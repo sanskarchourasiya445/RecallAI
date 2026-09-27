@@ -14,7 +14,7 @@ from dataclasses import dataclass, field, asdict
 
 from core.logger import get_logger
 
-logger = get_logger("gistly.workspace_memory")
+logger = get_logger("recallai.workspace_memory")
 
 
 @dataclass

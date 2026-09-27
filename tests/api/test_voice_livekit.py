@@ -18,11 +18,9 @@ class TestVoiceLiveKitStatus(unittest.TestCase):
     """Tests for the /api/v1/voice/livekit/status endpoint."""
 
     def setUp(self):
-        import httpx
-        self.client = httpx.Client(base_url=BASE_URL, timeout=15)
-
-    def tearDown(self):
-        self.client.close()
+        from fastapi.testclient import TestClient
+        from api.main import app
+        self.client = TestClient(app, raise_server_exceptions=False)
 
     def test_livekit_status_endpoint_reachable(self):
         """GET /api/v1/voice/livekit/status should always return 200."""
@@ -43,8 +41,6 @@ class TestVoiceLiveKitStatus(unittest.TestCase):
             r = self.client.get("/api/v1/voice/livekit/status")
             self.assertEqual(r.status_code, 200)
             data = r.json()
-            # Should be unconfigured if env vars missing (server reads env at request time)
-            # This is best-effort since the server process may cache the check
             self.assertIsInstance(data["configured"], bool)
         finally:
             if url:
@@ -59,11 +55,9 @@ class TestVoiceLiveKitToken(unittest.TestCase):
     """Tests for the /api/v1/voice/livekit/token endpoint."""
 
     def setUp(self):
-        import httpx
-        self.client = httpx.Client(base_url=BASE_URL, timeout=15)
-
-    def tearDown(self):
-        self.client.close()
+        from fastapi.testclient import TestClient
+        from api.main import app
+        self.client = TestClient(app, raise_server_exceptions=False)
 
     def test_token_without_livekit_config_returns_503(self):
         """Token endpoint must return 503 when LiveKit is not configured."""
@@ -212,11 +206,9 @@ class TestExistingVoiceHTTPEndpoints(unittest.TestCase):
     """Regression tests: ensure Phase 1-5 voice HTTP endpoints still work."""
 
     def setUp(self):
-        import httpx
-        self.client = httpx.Client(base_url=BASE_URL, timeout=15)
-
-    def tearDown(self):
-        self.client.close()
+        from fastapi.testclient import TestClient
+        from api.main import app
+        self.client = TestClient(app, raise_server_exceptions=False)
 
     def test_voice_synthesize_endpoint_exists(self):
         """POST /api/v1/voice/synthesize must be reachable."""

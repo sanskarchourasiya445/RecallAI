@@ -23,7 +23,7 @@ def get_health() -> HealthResponse:
 
     return HealthResponse(
         status=status_text,
-        service="gistly-api",
+        service="recallai-api",
         version="1.0.0",
         llm_provider=health_data["apis"].get("llm_provider", "auto"),
         embedding_provider=health_data["apis"].get("embedding_provider", "local"),

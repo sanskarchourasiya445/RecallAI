@@ -1,5 +1,5 @@
 """
-FastAPI Backend Package for Gistly.
+FastAPI Backend Package for RecallAI.
 """
 
 from api.main import app

@@ -1,7 +1,7 @@
 """
-Lightweight Model Context Protocol (MCP) Server for Jitsly.
+Lightweight Model Context Protocol (MCP) Server for RecallAI.
 Conforms to MCP JSON-RPC 2.0 protocol specifications over stdio or direct message invocation.
-Exposes Jitsly's controlled meeting action tools:
+Exposes RecallAI's controlled meeting action tools:
 - create_task, list_tasks
 - create_calendar_event, list_calendar_events
 - draft_email, send_email
@@ -15,7 +15,7 @@ from core.actions.tool_registry import DEFAULT_TOOL_REGISTRY, ToolRegistry
 from core.actions.models import ToolResult
 
 PROTOCOL_VERSION = "2024-11-05"
-SERVER_NAME = "jitsly-meeting-assistant"
+SERVER_NAME = "recallai-meeting-assistant"
 SERVER_VERSION = "1.0.0"
 
 

@@ -1,5 +1,5 @@
 """
-Common Pydantic Schemas for Gistly REST API.
+Common Pydantic Schemas for RecallAI REST API.
 """
 
 from typing import Optional, Any, Dict, List
@@ -16,7 +16,7 @@ class ErrorResponse(BaseModel):
 class HealthResponse(BaseModel):
     """Health and runtime diagnostic status response."""
     status: str = Field(..., description="Service operational status (Healthy/Degraded)")
-    service: str = Field("gistly-api", description="API Service Name")
+    service: str = Field("recallai-api", description="API Service Name")
     version: str = Field("1.0.0", description="API Service Version")
     llm_provider: str = Field(..., description="Active LLM provider setting")
     embedding_provider: str = Field(..., description="Active Embedding provider setting")

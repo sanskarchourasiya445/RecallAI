@@ -40,7 +40,7 @@ class ActionExecution(BaseModel):
     source_evidence_ids: List[str] = Field(default_factory=list)
     source_timestamp: Optional[str] = None
     created_at: float = Field(default_factory=time.time)
-    created_by: str = "jitsly"
+    created_by: str = "recallai"
 
     def to_dict(self) -> Dict[str, Any]:
         return self.model_dump()

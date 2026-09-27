@@ -1,5 +1,5 @@
 """
-Tests for LangGraph Stateful Workflow Orchestration in Gistly.
+Tests for LangGraph Stateful Workflow Orchestration in RecallAI.
 Validates:
 - End-to-end StateGraph compilation and invocation
 - Query understanding and intent detection (questions vs actions)

@@ -1,5 +1,5 @@
 """
-API Routes Package for Gistly.
+API Routes Package for RecallAI.
 """
 
 from api.routes.health import router as health_router

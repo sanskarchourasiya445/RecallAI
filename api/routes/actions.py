@@ -19,7 +19,7 @@ from api.schemas.actions import (
     PendingActionsResponse,
 )
 
-logger = get_logger("gistly.api.actions")
+logger = get_logger("recallai.api.actions")
 router = APIRouter(prefix="/actions", tags=["Actions & MCP"])
 
 

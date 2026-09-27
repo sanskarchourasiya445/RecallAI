@@ -1,5 +1,5 @@
 """
-Chat and RAG Conversation Schemas for Gistly API.
+Chat and RAG Conversation Schemas for RecallAI API.
 """
 
 from typing import List, Optional

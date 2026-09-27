@@ -446,7 +446,7 @@ def run_phase8_tests():
         # 22. Source Session Preserved
         print("\n--- Test 22: Source Session Preserved ---")
         assert created_task["source_session_id"] == session_a
-        assert created_task["created_by"] == "jitsly"
+        assert created_task["created_by"] == "recallai"
         print(f"[PASS] Test 22: Session attribution permanently embedded.")
         test_results["Test 22: Source Session Preserved"] = "PASS"
 
@@ -466,7 +466,7 @@ def run_phase8_tests():
         print("\n--- Bonus: MCP JSON-RPC Protocol Compatibility ---")
         init_req = {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}}
         init_resp = handle_json_rpc_message(init_req, registry=registry)
-        assert init_resp["result"]["serverInfo"]["name"] == "jitsly-meeting-assistant"
+        assert init_resp["result"]["serverInfo"]["name"] == "recallai-meeting-assistant"
 
         list_req = {"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}}
         list_resp = handle_json_rpc_message(list_req, registry=registry)

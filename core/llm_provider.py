@@ -1,5 +1,5 @@
 """
-Unified LLM Provider Abstraction for Gistly / Jitsly.
+Unified LLM Provider Abstraction for RecallAI.
 Supports:
 - Modern Google Gemini models (e.g., gemini-1.5-flash, gemini-2.0-flash)
 - Mistral AI fallback (mistral-small-latest)

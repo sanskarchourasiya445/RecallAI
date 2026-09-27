@@ -1,5 +1,5 @@
 """
-Meeting Ingestion, Processing, and Detail Schemas for Gistly API.
+Meeting Ingestion, Processing, and Detail Schemas for RecallAI API.
 """
 
 from typing import Optional, List, Any, Dict

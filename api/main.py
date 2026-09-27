@@ -1,7 +1,7 @@
 """
-FastAPI Backend Application Entry Point for Gistly / Jitsly.
+FastAPI Backend Application Entry Point for RecallAI.
 Architecture:
-  Streamlit UI / External Clients
+  Next.js Frontend / External Clients
              ↓ HTTP (REST)
        FastAPI Backend (/api/v1)
              ↓ Dependency Injection
@@ -31,22 +31,22 @@ from api.routes import (
 )
 from api.schemas.common import ErrorResponse
 
-logger = get_logger("gistly.api")
+logger = get_logger("recallai.api")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan management for initialization and clean shutdown."""
-    logger.info("Initializing Gistly FastAPI backend service...")
+    logger.info("Initializing RecallAI FastAPI backend service...")
     # Optional pre-warming or diagnostic check
     yield
-    logger.info("Shutting down Gistly FastAPI backend service...")
+    logger.info("Shutting down RecallAI FastAPI backend service...")
 
 
 app = FastAPI(
-    title="Gistly AI Meeting & Video Intelligence API",
+    title="RecallAI — Meeting & Video Intelligence API",
     description=(
-        "Production-grade REST API layer for Gistly. "
+        "Production-grade REST API layer for RecallAI. "
         "Provides endpoints for meeting ingestion, multilingual transcription, "
         "executive summarization, structured intelligence extraction, "
         "LangGraph-orchestrated grounded chat, and MCP-controlled actions."
@@ -62,8 +62,6 @@ app = FastAPI(
 _configured_origins = CORS_ORIGINS if CORS_ORIGINS else [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://localhost:8501",
-    "http://127.0.0.1:8501",
 ]
 _has_wildcard = "*" in _configured_origins
 
@@ -120,7 +118,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
 )
 def read_root():
     return {
-        "service": "gistly-api",
+        "service": "recallai-api",
         "version": "1.0.0",
         "docs_url": "/docs",
         "api_v1_prefix": "/api/v1",

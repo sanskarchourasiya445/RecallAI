@@ -1,5 +1,5 @@
 """
-Pydantic Schemas Package for Gistly API.
+Pydantic Schemas Package for RecallAI API.
 """
 
 from api.schemas.common import ErrorResponse, HealthResponse

@@ -1,5 +1,5 @@
 """
-Standardized logging and secret scrubbing filter for Jitsly / Gistly.
+Standardized logging and secret scrubbing filter for RecallAI.
 Ensures uniform logging across pipeline modules and guarantees that
 sensitive API keys or credentials are never exposed in log outputs.
 """
@@ -61,7 +61,7 @@ class SecretScrubbingFilter(logging.Filter):
         return True
 
 
-def get_logger(name: str = "gistly") -> logging.Logger:
+def get_logger(name: str = "recallai") -> logging.Logger:
     """
     Get or configure a standardized logger instance with secret scrubbing.
     """

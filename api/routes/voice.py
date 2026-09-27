@@ -14,7 +14,7 @@ from core.logger import get_logger
 from core.voice.voice import transcribe_voice_input_safe, synthesize_answer
 from core.config import DOWNLOAD_DIR, validate_media_file_extension
 
-logger = get_logger("gistly.api.voice")
+logger = get_logger("recallai.api.voice")
 router = APIRouter(prefix="/voice", tags=["Voice"])
 
 

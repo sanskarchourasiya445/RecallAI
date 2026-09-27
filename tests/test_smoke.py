@@ -25,7 +25,7 @@ os.environ.setdefault("MISTRAL_API_KEY", "mock-mistral-key-for-smoke-test")
 
 
 class TestProductionSmoke(unittest.TestCase):
-    """Production readiness and smoke test suite for Jitsly / Gistly."""
+    """Production readiness and smoke test suite for RecallAI."""
 
     def test_01_core_module_imports(self):
         """Verify all core production modules import without syntax or circular dependency errors."""

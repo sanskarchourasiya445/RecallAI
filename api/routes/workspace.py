@@ -24,7 +24,7 @@ from api.schemas.workspace import (
     WorkspaceMemoryResponse,
 )
 
-logger = get_logger("gistly.api.workspace")
+logger = get_logger("recallai.api.workspace")
 router = APIRouter(prefix="/workspace", tags=["Workspace Intelligence"])
 
 

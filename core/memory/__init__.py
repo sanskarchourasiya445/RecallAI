@@ -1,5 +1,5 @@
 """
-Conversational Memory package for Gistly.
+Conversational Memory package for RecallAI.
 Provides session-isolated multi-turn conversation memory and contextual referential resolution.
 """
 

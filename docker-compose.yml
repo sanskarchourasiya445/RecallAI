@@ -6,8 +6,6 @@
 #   3. voice-worker — Optional LiveKit Voice Agent Worker
 # ==============================================================================
 
-version: "3.8"
-
 services:
   backend:
     build:

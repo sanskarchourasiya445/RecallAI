@@ -1,5 +1,5 @@
 """
-Retrieval & Grounded Generation package for Gistly.
+Retrieval & Grounded Generation package for RecallAI.
 Provides ChromaDB vector storage, embedding generation, evidence provenance,
 and citation-grounded RAG reasoning.
 """

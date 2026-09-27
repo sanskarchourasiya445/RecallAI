@@ -110,7 +110,7 @@ class CalendarTool:
             "source_evidence_ids": clean_evidence_ids,
             "source_timestamp": source_timestamp,
             "created_at": now,
-            "created_by": "jitsly",
+            "created_by": "recallai",
         }
 
         if source_session_id not in self._events:

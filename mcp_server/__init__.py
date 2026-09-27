@@ -1,5 +1,5 @@
 """
-Jitsly MCP Server Package.
+RecallAI MCP Server Package.
 Implements Model Context Protocol (MCP) tool exposure for external clients.
 """
 

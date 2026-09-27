@@ -1,5 +1,5 @@
 """
-Ingestion module for Gistly.
+Ingestion module for RecallAI.
 Provides audio/video file and YouTube stream ingestion, format normalization (16kHz mono WAV),
 silence-aware chunking, and temporary storage lifecycle management.
 """

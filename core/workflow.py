@@ -1,5 +1,5 @@
 """
-LangGraph Stateful Workflow Orchestration for Gistly / Jitsly.
+LangGraph Stateful Workflow Orchestration for RecallAI.
 Orchestrates:
   User Request
       ↓

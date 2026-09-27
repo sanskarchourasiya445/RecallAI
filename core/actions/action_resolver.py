@@ -151,7 +151,7 @@ class ActionResolver:
             f"• Owner: {action_item.owner or 'Unassigned'}\n"
             f"• Due Date: {action_item.deadline or 'Not specified'}\n\n"
             f"Please let us know if you need any assistance.\n\n"
-            f"Best regards,\nJitsly Assistant"
+            f"Best regards,\nRecallAI Assistant"
         )
 
         args = {
@@ -201,3 +201,4 @@ class ActionResolver:
 
         # Default fallback to first if specifically asking about an action item
         return action_items[0] if action_items else None
+

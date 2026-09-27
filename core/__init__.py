@@ -1,5 +1,5 @@
 """
-Core package for Gistly / Jitsly.
+Core package for RecallAI.
 Modular AI Meeting & Video Intelligence Assistant.
 
 Subpackages:

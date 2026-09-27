@@ -1,5 +1,5 @@
 """
-Transcription module for Gistly.
+Transcription module for RecallAI.
 Integrates Whisper (local/GPU multilingual transcription) and Sarvam AI (specialized Hindi/Hinglish transcription).
 """
 

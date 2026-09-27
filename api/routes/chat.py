@@ -30,7 +30,7 @@ from api.schemas.chat import (
     ChatHistoryResponse,
 )
 
-logger = get_logger("gistly.api.chat")
+logger = get_logger("recallai.api.chat")
 router = APIRouter(prefix="/chat", tags=["Chat & RAG"])
 
 

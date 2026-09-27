@@ -1,5 +1,5 @@
 """
-Lightweight Observability & Tracing Module for Gistly / Jitsly.
+Lightweight Observability & Tracing Module for RecallAI.
 Integrates optional Langfuse tracing for:
 - LLM generation traces
 - Retrieval traces & relevance scores
@@ -52,7 +52,7 @@ def get_langfuse_callback(
             host=host,
             session_id=session_id,
             user_id=user_id,
-            tags=tags or ["gistly"],
+            tags=tags or ["recallai"],
         )
     except Exception as e:
         print(f"[Observability] Warning: Failed to initialize Langfuse callback: {e}")

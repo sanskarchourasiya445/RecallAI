@@ -1,7 +1,7 @@
 """
-Central In-Memory Meeting Session Store for Gistly / Jitsly.
+Central In-Memory Meeting Session Store for RecallAI.
 Manages meeting workspaces, staged media sources, and pipeline processing state.
-Framework-agnostic: shared across FastAPI, Streamlit, and CLI pipelines.
+Framework-agnostic: shared across FastAPI, frontend clients, and CLI pipelines.
 """
 
 import os
@@ -29,7 +29,7 @@ from core.intelligence import (
 )
 from core.retrieval import build_vector_store, build_rag_chain
 
-logger = get_logger("gistly.session_store")
+logger = get_logger("recallai.session_store")
 
 
 class MeetingSessionStore:

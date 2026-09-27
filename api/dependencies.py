@@ -1,5 +1,5 @@
 """
-FastAPI Dependencies for Gistly API.
+FastAPI Dependencies for RecallAI API.
 Provides singleton dependency injection for:
 - MeetingSessionStore
 - ToolRegistry

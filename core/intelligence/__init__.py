@@ -1,5 +1,5 @@
 """
-Meeting intelligence package for Gistly.
+Meeting intelligence package for RecallAI.
 Provides structured meeting intelligence extraction (action items, key decisions, open questions)
 and executive summarization.
 """
