@@ -59,10 +59,18 @@ app = FastAPI(
 )
 
 # ─── CORS Middleware ─────────────────────────────────────────────────────────────
+_configured_origins = CORS_ORIGINS if CORS_ORIGINS else [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8501",
+    "http://127.0.0.1:8501",
+]
+_has_wildcard = "*" in _configured_origins
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS if CORS_ORIGINS else ["http://localhost:8501"],
-    allow_credentials=True,
+    allow_origins=["*"] if _has_wildcard else _configured_origins,
+    allow_credentials=not _has_wildcard,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )

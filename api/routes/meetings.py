@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Body, status
 
 from core.logger import get_logger
-from core.config import validate_file_size, DOWNLOAD_DIR, MAX_UPLOAD_SIZE_MB
+from core.config import validate_file_size, validate_media_file_extension, DOWNLOAD_DIR, MAX_UPLOAD_SIZE_MB
 from core.session_store import MeetingSessionStore, process_meeting_source
 from core.demo import load_demo_meeting, DEMO_SESSION_ID
 from utils.audio_processor import process_input, cleanup_temp_files
@@ -89,6 +89,14 @@ def ingest_upload(
     file: UploadFile = File(..., description="Audio or video recording file"),
     store: MeetingSessionStore = Depends(get_session_store),
 ) -> MeetingIngestResponse:
+    # Validate media extension
+    is_valid_ext, ext_err = validate_media_file_extension(file.filename or "")
+    if not is_valid_ext:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=ext_err,
+        )
+
     session_id = uuid.uuid4().hex[:8]
     ext = os.path.splitext(file.filename)[1] or ".wav"
     safe_name = f"upload_{session_id}{ext}"

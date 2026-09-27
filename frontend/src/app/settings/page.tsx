@@ -99,7 +99,7 @@ export default function SettingsPage() {
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70 space-y-2 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">API Endpoint</span>
-                <span className="font-mono font-semibold text-slate-800">http://localhost:8000</span>
+                <span className="font-mono font-semibold text-slate-800">{process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-500">Service Status</span>

@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from core.logger import get_logger
 from core.voice.voice import transcribe_voice_input_safe, synthesize_answer
-from core.config import DOWNLOAD_DIR
+from core.config import DOWNLOAD_DIR, validate_media_file_extension
 
 logger = get_logger("gistly.api.voice")
 router = APIRouter(prefix="/voice", tags=["Voice"])
@@ -49,7 +49,16 @@ def transcribe_voice(
     file: UploadFile = File(..., description="Audio file recording of spoken question"),
     language: str = Form("english", description="Language: english or hinglish/hindi"),
 ) -> VoiceTranscribeResponse:
-    ext = os.path.splitext(file.filename)[1] or ".wav"
+    # Validate extension if filename provided
+    if file.filename:
+        is_valid_ext, ext_err = validate_media_file_extension(file.filename)
+        if not is_valid_ext:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=ext_err,
+            )
+
+    ext = os.path.splitext(file.filename or "")[1] or ".wav"
     temp_name = f"voice_query_{uuid.uuid4().hex[:8]}{ext}"
     temp_path = os.path.join(DOWNLOAD_DIR, temp_name)
 

@@ -29,3 +29,5 @@ action_audit.jsonl
 .coverage
 htmlcov/
 tests/
+frontend/node_modules/
+frontend/.next/

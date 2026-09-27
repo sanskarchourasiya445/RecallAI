@@ -146,6 +146,22 @@ def validate_transcript_length(char_count: int) -> Tuple[bool, Optional[str]]:
     return True, None
 
 
+ALLOWED_MEDIA_EXTENSIONS: set = {
+    ".wav", ".mp3", ".webm", ".m4a", ".mp4", ".aac", ".ogg", ".flac", ".mov", ".mkv",
+}
+
+
+def validate_media_file_extension(filename: str) -> Tuple[bool, Optional[str]]:
+    """Validate uploaded audio/video file extension against supported formats."""
+    if not filename or not filename.strip():
+        return False, "File name cannot be empty."
+    ext = os.path.splitext(filename)[1].lower()
+    if not ext or ext not in ALLOWED_MEDIA_EXTENSIONS:
+        allowed = ", ".join(sorted(ALLOWED_MEDIA_EXTENSIONS))
+        return False, f"Unsupported file extension '{ext}'. Supported formats: {allowed}."
+    return True, None
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # Storage Hygiene: Old Temporary File Cleanup
 # ─────────────────────────────────────────────────────────────────────────────
@@ -209,6 +225,18 @@ def get_system_health() -> Dict[str, Any]:
     sarvam_configured = bool(SARVAM_API_KEY and not SARVAM_API_KEY.startswith("mock-") and SARVAM_API_KEY != "your_sarvam_api_key_here")
     langfuse_configured = bool(LANGFUSE_ENABLED and LANGFUSE_PUBLIC_KEY and LANGFUSE_SECRET_KEY)
 
+    # LiveKit Voice configuration
+    livekit_url = os.getenv("LIVEKIT_URL", "")
+    livekit_key = os.getenv("LIVEKIT_API_KEY", "")
+    livekit_secret = os.getenv("LIVEKIT_API_SECRET", "")
+    livekit_configured = bool(
+        livekit_url
+        and livekit_key
+        and livekit_secret
+        and livekit_key != "your_livekit_api_key_here"
+        and not livekit_key.startswith("mock-")
+    )
+
     # Overall system status
     overall_status = "Healthy" if (ffmpeg_ok and download_writable and chroma_writable) else "Degraded"
 
@@ -241,6 +269,7 @@ def get_system_health() -> Dict[str, Any]:
             "transcription_provider": TRANSCRIPTION_PROVIDER,
             "langfuse_enabled": LANGFUSE_ENABLED,
             "langfuse_configured": langfuse_configured,
+            "livekit_configured": livekit_configured,
         },
         "storage": {
             "download_dir": DOWNLOAD_DIR,
