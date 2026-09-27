@@ -7,7 +7,12 @@ import {
   ActionItemsResponse,
   DecisionsResponse,
   OpenQuestionsResponse,
+  MeetingListItem,
 } from "@/types/meeting";
+
+export async function listMeetings(): Promise<MeetingListItem[]> {
+  return apiClient<MeetingListItem[]>("/api/v1/meetings");
+}
 
 export async function loadDemoMeeting(): Promise<MeetingDetailResponse> {
   return apiClient<MeetingDetailResponse>("/api/v1/meetings/demo", {

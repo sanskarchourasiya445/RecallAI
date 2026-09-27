@@ -1,8 +1,8 @@
 export interface CitationItem {
   evidence_id: string;
   time_range: string;
-  chunk_index: number;
-  source: string;
+  chunk_index?: number;
+  source?: string;
   score?: number | null;
 }
 

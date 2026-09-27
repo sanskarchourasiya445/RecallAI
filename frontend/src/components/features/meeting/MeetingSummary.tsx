@@ -6,17 +6,19 @@ import { Sparkles, ArrowRight } from "lucide-react";
 interface MeetingSummaryProps {
   summary?: string;
   keyHighlights?: string[];
+  isLoading?: boolean;
   onViewFullSummary?: () => void;
 }
 
 export function MeetingSummary({
-  summary = "The team discussed the product roadmap for Q2, focusing on the new AI features, user experience improvements, and go-to-market strategy. Key topics included the timeline for the feature launch, resource allocation, and customer feedback from the beta program.",
+  summary = "",
   keyHighlights = [
-    "AI-powered search feature will be prioritized for Q2 release",
-    "UX improvements based on beta feedback",
-    "Go-to-market strategy to include content marketing and partnerships",
-    "Need to finalize engineering resources for the next phase",
+    "AI-powered search feature prioritized for Q2 platform launch",
+    "Database migration to PostgreSQL 16 with PgBouncer connection pool",
+    "Marketing budget increased by 20% to support go-to-market strategy",
+    "Engineering allocation finalized for core architecture modules",
   ],
+  isLoading = false,
   onViewFullSummary,
 }: MeetingSummaryProps) {
   return (
@@ -39,24 +41,39 @@ export function MeetingSummary({
           </button>
         </div>
 
-        {/* Summary Paragraph */}
-        <p className="text-[13px] sm:text-[14px] text-slate-600 leading-relaxed font-normal">
-          {summary}
-        </p>
+        {/* Loading Skeleton */}
+        {isLoading ? (
+          <div className="space-y-3 animate-pulse py-2">
+            <div className="h-4 bg-slate-200 rounded w-full" />
+            <div className="h-4 bg-slate-200 rounded w-11/12" />
+            <div className="h-4 bg-slate-200 rounded w-4/5" />
+            <div className="mt-4 pt-2 space-y-2">
+              <div className="h-3.5 bg-slate-200 rounded w-1/4" />
+              <div className="h-3 bg-slate-100 rounded w-3/4" />
+              <div className="h-3 bg-slate-100 rounded w-2/3" />
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Summary Paragraph */}
+            <p className="text-[13px] sm:text-[14px] text-slate-600 leading-relaxed font-normal">
+              {summary || "No executive summary available for this session yet."}
+            </p>
 
-        {/* Key Highlights Subheading */}
-        <div className="mt-3.5">
-          <h4 className="text-[14px] font-semibold text-slate-900 mb-2">Key Highlights</h4>
-          <ul className="space-y-1.5">
-            {keyHighlights.map((highlight, idx) => (
-              <li key={idx} className="flex items-start gap-2.5 text-[13px] text-slate-600 leading-snug">
-                {/* Purple dot bullet indicator */}
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
-                <span>{highlight}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+            {/* Key Highlights Subheading */}
+            <div className="mt-3.5">
+              <h4 className="text-[14px] font-semibold text-slate-900 mb-2">Key Highlights</h4>
+              <ul className="space-y-1.5">
+                {keyHighlights.map((highlight, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-[13px] text-slate-600 leading-snug">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+                    <span>{highlight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

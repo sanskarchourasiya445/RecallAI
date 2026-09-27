@@ -21,9 +21,9 @@ const DEFAULT_MESSAGES: UIMessage[] = [
   {
     id: "msg-2",
     sender: "ai",
-    content: `Here are the main action items from this meeting:
+    content: `Here are the main action items identified from this meeting:
 
-1. Prepare and distribute complete PostgreSQL integration plan (Rahul) – Due Apr 30, 2025
+1. Prepare and distribute complete PostgreSQL migration plan (Rahul) – Due Apr 30, 2025
 2. Create content marketing plan (Priya) – Due May 5, 2025
 3. Finalize engineering resources (David) – Due May 10, 2025
 4. Share customer feedback summary (Sarah) – Due May 8, 2025`,
@@ -41,6 +41,14 @@ const DEFAULT_MESSAGES: UIMessage[] = [
     content:
       "The team decided to prioritize the AI-powered search feature for Q2 release. This was confirmed during the meeting at 12:34, with Rahul leading the initiative.",
     timestamp: "10:26 AM",
+    citations: [
+      {
+        evidence_id: "E1",
+        time_range: "00:00:00 - 00:00:25",
+        chunk_index: 0,
+        source: "transcript",
+      },
+    ],
   },
 ];
 
@@ -52,6 +60,7 @@ export function AIChat({
   const [messages, setMessages] = useState<UIMessage[]>(initialMessages);
   const [inputVal, setInputVal] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,6 +71,7 @@ export function AIChat({
     const text = inputVal.trim();
     if (!text || isLoading) return;
 
+    setErrorMsg(null);
     const userTime = new Date().toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit",
@@ -107,17 +117,20 @@ export function AIChat({
       if (response.requires_confirmation && response.pending_action_id && onActionTriggered) {
         onActionTriggered(response.pending_action_id);
       }
-    } catch {
-      // Fallback local intelligent response
+    } catch (err: unknown) {
       const aiTime = new Date().toLocaleTimeString([], {
         hour: "2-digit",
         minute: "2-digit",
       });
 
+      const errText = err instanceof Error ? err.message : "Backend unavailable";
+      setErrorMsg(errText);
+
+      // Add informative message
       const fallbackMsg: UIMessage = {
         id: `ai-${Date.now()}`,
         sender: "ai",
-        content: `I reviewed the meeting transcript for: "${text}".\n\nThe team confirmed prioritizing the core platform initiatives with Rahul and Sarah taking lead ownership. All requirements align with the Q2 roadmap milestones.`,
+        content: `I could not reach the live RAG backend (${errText}). If the meeting is still indexing or server is starting up, please try again shortly.`,
         timestamp: aiTime,
       };
 
@@ -154,7 +167,6 @@ export function AIChat({
           if (isUser) {
             return (
               <div key={msg.id} className="flex flex-col items-end">
-                {/* Light indigo user chat bubble */}
                 <div className="max-w-[85%] rounded-2xl rounded-tr-xs bg-[#EEF2FF] border border-indigo-100 px-3 py-2 text-xs text-slate-800 shadow-2xs leading-relaxed">
                   {msg.content}
                 </div>
@@ -206,7 +218,7 @@ export function AIChat({
         {isLoading && (
           <div className="flex items-center gap-1.5 text-xs text-slate-400 pl-7">
             <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-500" />
-            <span>Analyzing meeting transcript...</span>
+            <span>Searching meeting memory & transcript...</span>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -214,6 +226,17 @@ export function AIChat({
 
       {/* Fixed Chat Input Bar at Bottom */}
       <div className="shrink-0 p-2.5 border-t border-slate-100 bg-white rounded-b-2xl">
+        {errorMsg && (
+          <div className="mb-2 px-2.5 py-1 rounded-lg bg-rose-50 border border-rose-100 text-[11px] text-rose-600 flex items-center justify-between">
+            <span className="truncate">{errorMsg}</span>
+            <button
+              onClick={() => setErrorMsg(null)}
+              className="text-rose-500 hover:text-rose-700 ml-1 text-xs"
+            >
+              dismiss
+            </button>
+          </div>
+        )}
         <form
           onSubmit={(e) => {
             e.preventDefault();

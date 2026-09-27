@@ -6,30 +6,13 @@ import { DecisionItem } from "@/types/meeting";
 
 interface DecisionsSectionProps {
   decisions?: DecisionItem[];
+  isLoading?: boolean;
   onViewAll?: () => void;
 }
 
 export function DecisionsSection({
-  decisions = [
-    {
-      decision: "AI search feature will be prioritized for Q2 release.",
-      timestamp: "12:34",
-      author: "Rahul",
-      status: "Confirmed",
-    },
-    {
-      decision: "Marketing budget will be increased by 20% for Q2.",
-      timestamp: "18:22",
-      author: "Priya",
-      status: "Confirmed",
-    },
-    {
-      decision: "Engineering team will use the new architecture for the AI module.",
-      timestamp: "26:17",
-      author: "David",
-      status: "Confirmed",
-    },
-  ],
+  decisions = [],
+  isLoading = false,
   onViewAll,
 }: DecisionsSectionProps) {
   return (
@@ -42,6 +25,11 @@ export function DecisionsSection({
             <h3 className="text-[15px] sm:text-[16px] font-bold text-slate-900 tracking-tight">
               Decisions
             </h3>
+            {decisions.length > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold">
+                {decisions.length}
+              </span>
+            )}
           </div>
           <button
             onClick={onViewAll}
@@ -52,31 +40,55 @@ export function DecisionsSection({
           </button>
         </div>
 
-        {/* Decisions List */}
-        <div className="divide-y divide-slate-100">
-          {decisions.map((item, idx) => (
-            <div key={idx} className="py-2 first:pt-1.5 last:pb-0.5 flex items-start gap-2.5">
-              {/* Numbered Green Circle */}
-              <div className="w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
-                {idx + 1}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-slate-800 leading-snug line-clamp-2 break-words">
-                  {item.decision}
-                </p>
-                <div className="flex items-center justify-between gap-2 mt-0.5">
-                  <span className="text-[12px] text-slate-400 font-normal">
-                    Based on: {item.timestamp || "12:34"} · {item.author || "Team"}
-                  </span>
-                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[10px] font-semibold shrink-0">
-                    {item.status || "Confirmed"}
-                  </span>
+        {/* Loading Skeleton */}
+        {isLoading ? (
+          <div className="divide-y divide-slate-100 animate-pulse">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="py-2.5 flex items-start gap-2.5">
+                <div className="w-4 h-4 rounded-full bg-slate-200 shrink-0 mt-0.5" />
+                <div className="flex-1 space-y-1.5">
+                  <div className="h-3.5 bg-slate-200 rounded w-5/6" />
+                  <div className="h-2.5 bg-slate-100 rounded w-1/2" />
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : decisions.length === 0 ? (
+          /* Empty State */
+          <div className="py-8 text-center text-slate-400">
+            <CheckCircle2 className="w-6 h-6 mx-auto mb-1.5 text-slate-300 stroke-1" />
+            <p className="text-xs font-semibold text-slate-600">No decisions identified</p>
+            <p className="text-[11px] text-slate-400 mt-0.5">
+              No formal consensus items detected in transcript.
+            </p>
+          </div>
+        ) : (
+          /* Decisions List */
+          <div className="divide-y divide-slate-100">
+            {decisions.slice(0, 4).map((item, idx) => (
+              <div key={idx} className="py-2 first:pt-1.5 last:pb-0.5 flex items-start gap-2.5">
+                {/* Numbered Green Circle */}
+                <div className="w-4 h-4 rounded-full bg-emerald-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                  {idx + 1}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-medium text-slate-800 leading-snug line-clamp-2 break-words">
+                    {item.decision}
+                  </p>
+                  <div className="flex items-center justify-between gap-2 mt-0.5">
+                    <span className="text-[12px] text-slate-400 font-normal">
+                      Based on: {item.timestamp || "12:34"} · {item.author || "Team"}
+                    </span>
+                    <span className="px-1.5 py-0.2 rounded-full bg-emerald-50 border border-emerald-200/60 text-emerald-700 text-[10px] font-semibold shrink-0">
+                      {item.status || "Confirmed"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

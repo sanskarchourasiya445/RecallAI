@@ -5,7 +5,7 @@ Meeting Ingestion, Pipeline Processing, and Intelligence Extraction Router.
 import os
 import uuid
 import shutil
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Body, status
 
 from core.logger import get_logger
@@ -30,6 +30,7 @@ from api.schemas.meeting import (
     MeetingIngestResponse,
     MeetingProcessResponse,
     MeetingDetailResponse,
+    MeetingListItemResponse,
 )
 from api.schemas.intelligence import (
     SummaryResponse,
@@ -271,6 +272,46 @@ def load_demo(
         segments_count=len(demo.get("segments", [])),
         is_demo=True,
     )
+
+
+@router.get(
+    "",
+    response_model=List[MeetingListItemResponse],
+    status_code=status.HTTP_200_OK,
+    summary="List All Available Meeting Sessions",
+)
+def list_meetings(
+    store: MeetingSessionStore = Depends(get_session_store),
+) -> List[MeetingListItemResponse]:
+    # Auto-load demo session if store is empty
+    if not store.list_sessions():
+        demo = store.get_session(DEMO_SESSION_ID)
+        if not demo:
+            demo = load_demo_meeting()
+            store.save_session(DEMO_SESSION_ID, demo)
+
+    sessions: List[MeetingListItemResponse] = []
+    for s_id in store.list_sessions():
+        s = store.get_session(s_id)
+        if s:
+            sessions.append(
+                MeetingListItemResponse(
+                    session_id=s_id,
+                    title=s.get("title", "Untitled Meeting"),
+                    status=s.get("status", "completed"),
+                    created_at=s.get("created_at", "Apr 28, 2025 • 10:00 AM"),
+                    source=s.get("source"),
+                    source_type=s.get("source_type", "youtube" if "youtube" in str(s.get("source", "")).lower() else "upload"),
+                    duration=s.get("duration", "42 min"),
+                    participants_count=s.get("participants_count", 12),
+                    summary_preview=s.get("summary", "")[:180] + ("..." if len(s.get("summary", "")) > 180 else ""),
+                    decisions_count=len(s.get("key_decisions_structured", [])),
+                    actions_count=len(s.get("action_items_structured", [])),
+                    open_questions_count=len(s.get("open_questions_structured", [])),
+                    is_demo=s.get("is_demo", s_id == DEMO_SESSION_ID),
+                )
+            )
+    return sessions
 
 
 @router.get(

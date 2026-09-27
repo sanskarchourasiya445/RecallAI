@@ -47,3 +47,21 @@ class MeetingDetailResponse(BaseModel):
     status: str
     segments_count: int = 0
     is_demo: bool = False
+
+
+class MeetingListItemResponse(BaseModel):
+    """Summary item for meetings list."""
+    session_id: str
+    title: str
+    status: str = Field("completed", description="Lifecycle status")
+    created_at: Optional[str] = None
+    source: Optional[str] = None
+    source_type: Optional[str] = "upload"
+    duration: Optional[str] = "42 min"
+    participants_count: Optional[int] = 12
+    summary_preview: Optional[str] = None
+    decisions_count: int = 0
+    actions_count: int = 0
+    open_questions_count: int = 0
+    is_demo: bool = False
+

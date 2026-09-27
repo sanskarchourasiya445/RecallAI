@@ -85,3 +85,19 @@ export interface OpenQuestionsResponse {
   open_questions: OpenQuestionItem[];
   total: number;
 }
+
+export interface MeetingListItem {
+  session_id: string;
+  title: string;
+  status: string;
+  created_at?: string | null;
+  source?: string | null;
+  source_type?: "youtube" | "upload" | string;
+  duration?: string | null;
+  participants_count?: number;
+  summary_preview?: string | null;
+  decisions_count: number;
+  actions_count: number;
+  open_questions_count: number;
+  is_demo: boolean;
+}

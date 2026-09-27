@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   X,
   UploadCloud,
@@ -8,6 +9,7 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  FileAudio,
 } from "lucide-react";
 import { ingestYouTube, ingestUpload, processMeeting, loadDemoMeeting } from "@/lib/api/meetings";
 import { MeetingDetailResponse } from "@/types/meeting";
@@ -20,10 +22,12 @@ function YoutubeIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+type PipelineStep = "idle" | "staging" | "transcribing" | "indexing" | "finalizing" | "completed";
+
 interface NewMeetingModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onMeetingLoaded: (meeting: MeetingDetailResponse) => void;
+  onMeetingLoaded?: (meeting: MeetingDetailResponse) => void;
 }
 
 export function NewMeetingModal({
@@ -31,11 +35,13 @@ export function NewMeetingModal({
   onClose,
   onMeetingLoaded,
 }: NewMeetingModalProps) {
+  const router = useRouter();
   const [tab, setTab] = useState<"demo" | "youtube" | "upload">("demo");
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [language, setLanguage] = useState("english");
   const [isLoading, setIsLoading] = useState(false);
+  const [pipelineStep, setPipelineStep] = useState<PipelineStep>("idle");
   const [statusMsg, setStatusMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -44,13 +50,21 @@ export function NewMeetingModal({
   const handleLoadDemo = async () => {
     setIsLoading(true);
     setErrorMsg(null);
+    setPipelineStep("transcribing");
     setStatusMsg("Loading offline demo meeting fixture...");
     try {
       const demo = await loadDemoMeeting();
-      onMeetingLoaded(demo);
-      onClose();
+      setPipelineStep("completed");
+      setStatusMsg("Demo meeting loaded successfully!");
+      if (onMeetingLoaded) {
+        onMeetingLoaded(demo);
+      }
+      setTimeout(() => {
+        onClose();
+        router.push(`/meetings/${demo.session_id}`);
+      }, 400);
     } catch {
-      // If FastAPI is not currently running or offline, synthesize demo meeting
+      // Offline fallback
       const mockDemo: MeetingDetailResponse = {
         session_id: "demo_backend_migration",
         title: "Product Strategy Meeting",
@@ -60,8 +74,11 @@ export function NewMeetingModal({
         status: "completed",
         is_demo: true,
       };
-      onMeetingLoaded(mockDemo);
+      if (onMeetingLoaded) {
+        onMeetingLoaded(mockDemo);
+      }
       onClose();
+      router.push(`/meetings/${mockDemo.session_id}`);
     } finally {
       setIsLoading(false);
     }
@@ -73,23 +90,46 @@ export function NewMeetingModal({
 
     setIsLoading(true);
     setErrorMsg(null);
-    setStatusMsg("Ingesting YouTube media and extracting audio stream...");
+    setPipelineStep("staging");
+    setStatusMsg("Staging YouTube media and extracting audio stream via yt-dlp...");
 
     try {
+      // Step 1: Ingest URL
       const ingestRes = await ingestYouTube(youtubeUrl.trim());
-      setStatusMsg("Audio staged. Running transcription, vectorization, and intelligence...");
-      await processMeeting(ingestRes.session_id, language);
-      setStatusMsg("Pipeline completed! Loading workspace...");
-      onMeetingLoaded({
-        session_id: ingestRes.session_id,
-        title: ingestRes.source || "Ingested YouTube Meeting",
-        transcript: "",
-        summary: "",
-        status: "completed",
-      });
-      onClose();
+
+      // Step 2: Run pipeline
+      setPipelineStep("transcribing");
+      setStatusMsg(`Processing session ${ingestRes.session_id}: transcribing speech & extracting intelligence...`);
+
+      const processRes = await processMeeting(ingestRes.session_id, language);
+
+      setPipelineStep("indexing");
+      setStatusMsg(`Indexed ${processRes.action_items_count} actions, ${processRes.decisions_count} decisions into ChromaDB...`);
+
+      setPipelineStep("completed");
+      setStatusMsg("Pipeline execution complete! Redirecting to meeting workspace...");
+
+      if (onMeetingLoaded) {
+        onMeetingLoaded({
+          session_id: ingestRes.session_id,
+          title: ingestRes.source || "Ingested YouTube Meeting",
+          transcript: "",
+          summary: "",
+          status: "completed",
+        });
+      }
+
+      setTimeout(() => {
+        onClose();
+        router.push(`/meetings/${ingestRes.session_id}`);
+      }, 600);
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to process YouTube URL.");
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Failed to process YouTube URL. Please verify the URL and backend status."
+      );
+      setPipelineStep("idle");
     } finally {
       setIsLoading(false);
     }
@@ -101,23 +141,46 @@ export function NewMeetingModal({
 
     setIsLoading(true);
     setErrorMsg(null);
+    setPipelineStep("staging");
     setStatusMsg(`Uploading ${selectedFile.name} (${(selectedFile.size / (1024 * 1024)).toFixed(1)} MB)...`);
 
     try {
+      // Step 1: Upload file
       const ingestRes = await ingestUpload(selectedFile);
-      setStatusMsg("Audio staged. Running multi-segment transcription & AI analysis...");
-      await processMeeting(ingestRes.session_id, language);
-      setStatusMsg("Analysis complete! Loading workspace...");
-      onMeetingLoaded({
-        session_id: ingestRes.session_id,
-        title: selectedFile.name,
-        transcript: "",
-        summary: "",
-        status: "completed",
-      });
-      onClose();
+
+      // Step 2: Run pipeline
+      setPipelineStep("transcribing");
+      setStatusMsg("Transcribing audio segments & generating multi-modal intelligence...");
+
+      const processRes = await processMeeting(ingestRes.session_id, language);
+
+      setPipelineStep("indexing");
+      setStatusMsg(`Indexed ${processRes.action_items_count} actions, ${processRes.decisions_count} decisions into ChromaDB...`);
+
+      setPipelineStep("completed");
+      setStatusMsg("Workspace ready! Opening meeting...");
+
+      if (onMeetingLoaded) {
+        onMeetingLoaded({
+          session_id: ingestRes.session_id,
+          title: selectedFile.name,
+          transcript: "",
+          summary: "",
+          status: "completed",
+        });
+      }
+
+      setTimeout(() => {
+        onClose();
+        router.push(`/meetings/${ingestRes.session_id}`);
+      }, 600);
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : "Failed to process audio/video upload.");
+      setErrorMsg(
+        err instanceof Error
+          ? err.message
+          : "Failed to upload or analyze media file. Please check backend connection."
+      );
+      setPipelineStep("idle");
     } finally {
       setIsLoading(false);
     }
@@ -143,7 +206,8 @@ export function NewMeetingModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+            disabled={isLoading}
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 disabled:opacity-40"
           >
             <X className="w-4 h-4" />
           </button>
@@ -153,33 +217,36 @@ export function NewMeetingModal({
         <div className="grid grid-cols-3 p-2 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-600">
           <button
             type="button"
+            disabled={isLoading}
             onClick={() => setTab("demo")}
             className={`py-2 rounded-xl transition-all ${
               tab === "demo"
                 ? "bg-white text-indigo-600 shadow-xs"
-                : "hover:text-slate-900"
+                : "hover:text-slate-900 disabled:opacity-50"
             }`}
           >
             🎯 Instant Demo
           </button>
           <button
             type="button"
+            disabled={isLoading}
             onClick={() => setTab("youtube")}
             className={`py-2 rounded-xl transition-all ${
               tab === "youtube"
                 ? "bg-white text-indigo-600 shadow-xs"
-                : "hover:text-slate-900"
+                : "hover:text-slate-900 disabled:opacity-50"
             }`}
           >
             📺 YouTube URL
           </button>
           <button
             type="button"
+            disabled={isLoading}
             onClick={() => setTab("upload")}
             className={`py-2 rounded-xl transition-all ${
               tab === "upload"
                 ? "bg-white text-indigo-600 shadow-xs"
-                : "hover:text-slate-900"
+                : "hover:text-slate-900 disabled:opacity-50"
             }`}
           >
             📁 File Upload
@@ -189,9 +256,30 @@ export function NewMeetingModal({
         {/* Modal Body */}
         <div className="p-6">
           {errorMsg && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
-              <span>{errorMsg}</span>
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+              <div className="flex-1">
+                <p className="font-semibold">Error occurred</p>
+                <p className="text-[11px] text-rose-600 mt-0.5">{errorMsg}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Honest Processing Status Banner */}
+          {isLoading && (
+            <div className="mb-4 p-3.5 rounded-2xl bg-indigo-50/70 border border-indigo-100 space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-indigo-950">
+                <Loader2 className="w-4 h-4 animate-spin text-indigo-600 shrink-0" />
+                <span>
+                  {pipelineStep === "staging" && "Staging Source Audio..."}
+                  {pipelineStep === "transcribing" && "Transcribing & Extracting Intelligence..."}
+                  {pipelineStep === "indexing" && "Indexing Knowledge Embeddings..."}
+                  {pipelineStep === "completed" && "Pipeline Finalized!"}
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-600 leading-snug pl-6">
+                {statusMsg}
+              </p>
             </div>
           )}
 
@@ -203,7 +291,7 @@ export function NewMeetingModal({
                   Pre-Parsed & Indexed Offline Demonstration
                 </h4>
                 <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                  Loads the full <strong>Backend Platform Migration & Strategy Sync</strong> fixture with 3 action items, 4 confirmed decisions, 2 open dilemmas, pre-computed vector embeddings, and RAG chat memory. Zero API keys required!
+                  Loads the full <strong>Backend Platform Migration & Cloud Infrastructure Sync</strong> fixture with 3 action items, 4 confirmed decisions, 2 open dilemmas, pre-computed vector embeddings, and RAG chat memory. Zero external API keys required!
                 </p>
               </div>
 
@@ -216,7 +304,7 @@ export function NewMeetingModal({
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>{statusMsg || "Loading..."}</span>
+                    <span>Loading Demo Workspace...</span>
                   </>
                 ) : (
                   <span>Load Strategy Meeting Demo</span>
@@ -255,7 +343,7 @@ export function NewMeetingModal({
                   disabled={isLoading}
                   className="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs text-slate-700 bg-white focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="english">English (Default)</option>
+                  <option value="english">English (Whisper / Gemini)</option>
                   <option value="hinglish">Hinglish / Hindi (Sarvam STT)</option>
                 </select>
               </div>
@@ -268,7 +356,7 @@ export function NewMeetingModal({
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>{statusMsg || "Processing..."}</span>
+                    <span>Processing Media...</span>
                   </>
                 ) : (
                   <span>Ingest & Analyze YouTube Video</span>
@@ -293,14 +381,28 @@ export function NewMeetingModal({
                     className="hidden"
                     id="file-upload"
                   />
-                  <label htmlFor="file-upload" className="cursor-pointer">
-                    <UploadCloud className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-slate-700">
-                      {selectedFile ? selectedFile.name : "Click to select audio or video"}
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-1">
-                      MP3, WAV, M4A, MP4, WEBM up to 100 MB
-                    </p>
+                  <label htmlFor="file-upload" className="cursor-pointer block">
+                    {selectedFile ? (
+                      <div className="flex flex-col items-center">
+                        <FileAudio className="w-8 h-8 text-indigo-600 mb-1" />
+                        <p className="text-xs font-bold text-slate-800">
+                          {selectedFile.name}
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <UploadCloud className="w-8 h-8 text-indigo-500 mx-auto mb-2" />
+                        <p className="text-xs font-semibold text-slate-700">
+                          Click to select audio or video file
+                        </p>
+                        <p className="text-[11px] text-slate-400 mt-1">
+                          MP3, WAV, M4A, MP4, WEBM up to 100 MB
+                        </p>
+                      </>
+                    )}
                   </label>
                 </div>
               </div>
@@ -315,7 +417,7 @@ export function NewMeetingModal({
                   disabled={isLoading}
                   className="w-full h-9 px-3 rounded-xl border border-slate-200 text-xs text-slate-700 bg-white focus:outline-none focus:border-indigo-500"
                 >
-                  <option value="english">English (Default)</option>
+                  <option value="english">English (Whisper / Gemini)</option>
                   <option value="hinglish">Hinglish / Hindi (Sarvam STT)</option>
                 </select>
               </div>
@@ -328,7 +430,7 @@ export function NewMeetingModal({
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>{statusMsg || "Uploading..."}</span>
+                    <span>Uploading & Analyzing...</span>
                   </>
                 ) : (
                   <span>Upload & Run Intelligence Pipeline</span>

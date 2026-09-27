@@ -12,9 +12,13 @@ export class ApiError extends Error {
   }
 }
 
+export interface ApiOptions extends RequestInit {
+  timeoutMs?: number;
+}
+
 export async function apiClient<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: ApiOptions = {}
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
@@ -28,10 +32,25 @@ export async function apiClient<T>(
     (headers as Record<string, string>)["Content-Type"] = "application/json";
   }
 
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
+  const { timeoutMs = 60000, signal, ...fetchOptions } = options;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...fetchOptions,
+      headers,
+      signal: signal || controller.signal,
+    });
+  } catch (err: unknown) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new ApiError(`Request timed out after ${timeoutMs / 1000}s`, 408);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!response.ok) {
     let errorData: unknown = null;

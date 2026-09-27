@@ -14,6 +14,7 @@ interface InsightCardsGridProps {
   decisionsCount?: number;
   actionItemsCount?: number;
   openQuestionsCount?: number;
+  isLoading?: boolean;
   onSelectCard?: (type: string) => void;
 }
 
@@ -22,6 +23,7 @@ export function InsightCardsGrid({
   decisionsCount = 4,
   actionItemsCount = 3,
   openQuestionsCount = 2,
+  isLoading = false,
   onSelectCard,
 }: InsightCardsGridProps) {
   const cards = [
@@ -66,6 +68,27 @@ export function InsightCardsGrid({
       arrowColor: "text-pink-400 group-hover:text-pink-600",
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 animate-pulse">
+        {[1, 2, 3, 4].map((i) => (
+          <div
+            key={i}
+            className="h-[92px] sm:h-[96px] rounded-xl border border-slate-200 bg-white px-3.5 py-3 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3 w-full">
+              <div className="w-8 h-8 rounded-lg bg-slate-200 shrink-0" />
+              <div className="space-y-1.5 flex-1">
+                <div className="h-4 bg-slate-200 rounded w-1/2" />
+                <div className="h-3 bg-slate-100 rounded w-3/4" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { X, Sparkles } from "lucide-react";
@@ -18,19 +19,44 @@ export function AppShell({
   rightPanel,
   onNewMeetingClick,
   onSearch,
-  currentNav = "meetings",
+  currentNav,
 }: AppShellProps) {
-  const [activeNav, setActiveNav] = useState(currentNav);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const activeNav = useMemo(() => {
+    if (currentNav) return currentNav;
+    if (!pathname || pathname === "/") return "meetings";
+    if (pathname.startsWith("/meetings")) return "meetings";
+    if (pathname.startsWith("/actions")) return "actions";
+    if (pathname.startsWith("/settings")) return "settings";
+    return "meetings";
+  }, [pathname, currentNav]);
+
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isMobileAIOpen, setIsMobileAIOpen] = useState(false);
+
+  const handleNavSelect = (navId: string) => {
+    if (navId === "dashboard") {
+      router.push("/");
+    } else if (navId === "meetings") {
+      router.push("/meetings");
+    } else if (navId === "actions") {
+      router.push("/actions");
+    } else if (navId === "settings") {
+      router.push("/settings");
+    } else if (navId === "chat") {
+      setIsMobileAIOpen(true);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#F6F8FC] text-slate-800 antialiased font-sans">
       {/* 1. LEFT COLLAPSIBLE / SLIDING SIDEBAR (240-245px expanded, 68-72px collapsed) */}
       <Sidebar
         activeNav={activeNav}
-        setActiveNav={setActiveNav}
+        setActiveNav={handleNavSelect}
         isCollapsed={isSidebarCollapsed}
         onToggleCollapse={() => setIsSidebarCollapsed((prev) => !prev)}
         isMobileOpen={isMobileSidebarOpen}

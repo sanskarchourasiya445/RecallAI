@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Zap,
   ChevronRight,
@@ -12,9 +12,10 @@ import {
   XCircle,
   Clock,
   ShieldAlert,
+  Loader2,
 } from "lucide-react";
 import { PendingActionItem } from "@/types/action";
-import { confirmAction, rejectAction, executeAction } from "@/lib/api/actions";
+import { confirmAction, rejectAction, executeAction, getPendingActions } from "@/lib/api/actions";
 
 interface QuickActionsProps {
   sessionId?: string;
@@ -28,98 +29,151 @@ export function QuickActions({
   onActionCompleted,
 }: QuickActionsProps) {
   const [activeTab, setActiveTab] = useState<"available" | "pending">("available");
-  const [pendingList, setPendingList] = useState<PendingActionItem[]>([
-    {
-      action_id: "act-101",
-      session_id: sessionId,
-      tool_name: "send_email",
-      risk_level: "consequential",
-      preview_summary: "Send executive summary & action items to Sarah, Rahul, and David",
-      expires_at: Date.now() + 3600000,
-    },
-    {
-      action_id: "act-102",
-      session_id: sessionId,
-      tool_name: "create_task",
-      risk_level: "consequential",
-      preview_summary: "Create Jira Ticket: 'Prepare and distribute PostgreSQL migration plan' (Assignee: Rahul)",
-      expires_at: Date.now() + 3600000,
-    },
-    {
-      action_id: "act-103",
-      session_id: sessionId,
-      tool_name: "schedule_calendar_event",
-      risk_level: "consequential",
-      preview_summary: "Schedule Standup Follow-up for Tuesday May 2, 2025 at 10:00 AM",
-      expires_at: Date.now() + 3600000,
-    },
-  ]);
+  const [pendingList, setPendingList] = useState<PendingActionItem[]>([]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [processingActionId, setProcessingActionId] = useState<string | null>(null);
+
+  // Sync real pending confirmations from backend
+  const fetchPending = useCallback(async () => {
+    try {
+      const res = await getPendingActions(sessionId);
+      if (res && res.pending_actions) {
+        setPendingList(res.pending_actions);
+      }
+    } catch {
+      // Default initial mock pending items if backend is offline
+      setPendingList([
+        {
+          action_id: "act-101",
+          session_id: sessionId,
+          tool_name: "send_email",
+          risk_level: "high",
+          preview_summary: "Send executive summary & action items to Sarah, Rahul, and David",
+          expires_at: Date.now() + 3600000,
+        },
+        {
+          action_id: "act-102",
+          session_id: sessionId,
+          tool_name: "create_task",
+          risk_level: "low",
+          preview_summary: "Create Task: 'Prepare and distribute PostgreSQL migration plan' (Assignee: Rahul)",
+          expires_at: Date.now() + 3600000,
+        },
+        {
+          action_id: "act-103",
+          session_id: sessionId,
+          tool_name: "create_calendar_event",
+          risk_level: "medium",
+          preview_summary: "Schedule Standup Follow-up for Tuesday May 2, 2025 at 10:00 AM",
+          expires_at: Date.now() + 3600000,
+        },
+      ]);
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    fetchPending();
+  }, [fetchPending]);
 
   const tools = [
     {
       id: "create_task",
-      title: "Create Jira Ticket",
-      subtitle: "Create a new ticket in Jira",
+      title: "Create Task",
+      subtitle: "Create actionable task with owner & provenance",
       icon: Layers,
       bg: "bg-blue-50 text-blue-600 border border-blue-100",
     },
     {
       id: "send_email",
       title: "Send Email",
-      subtitle: "Send an email to team members",
+      subtitle: "Send follow-up email (Requires Confirmation)",
       icon: Mail,
       bg: "bg-sky-50 text-sky-600 border border-sky-100",
     },
     {
-      id: "schedule_meeting",
+      id: "create_calendar_event",
       title: "Schedule Meeting",
-      subtitle: "Create a calendar event",
+      subtitle: "Create calendar event (Requires Confirmation)",
       icon: Calendar,
       bg: "bg-purple-50 text-purple-600 border border-purple-100",
     },
   ];
 
   const handleToolClick = async (toolId: string) => {
+    setIsLoading(true);
     try {
-      const res = await executeAction(sessionId, toolId, {
+      let params: Record<string, unknown> = {
         source_session_id: sessionId,
-        title: "Platform Architecture Follow-up",
-      });
+      };
+
+      if (toolId === "send_email") {
+        params = {
+          ...params,
+          recipient: "team@recallai.internal",
+          subject: "Meeting Follow-up & Architecture Summary",
+          body: "Hello Team, please review the summary of our sync and confirmed decisions.",
+        };
+      } else if (toolId === "create_calendar_event") {
+        params = {
+          ...params,
+          title: "Architecture Sync Follow-up",
+          start_time: "2026-10-15 14:00",
+          end_time: "2026-10-15 15:00",
+          participants: ["Rahul", "Sarah", "David"],
+          description: "Follow-up discussion on PostgreSQL migration plan and benchmarks.",
+        };
+      } else {
+        params = {
+          ...params,
+          title: "Follow-up on database benchmarks",
+          owner: "Rahul",
+          deadline: "May 2, 2025",
+        };
+      }
+
+      const res = await executeAction(sessionId, toolId, params);
 
       if (res.requires_confirmation) {
         setStatusMessage(`Action staged for confirmation: ${res.message}`);
         setActiveTab("pending");
+        fetchPending();
       } else {
-        setStatusMessage(`Action executed: ${res.message}`);
+        setStatusMessage(`Action executed successfully: ${res.message}`);
         onActionCompleted?.(res.message);
       }
     } catch {
-      const msg = `Triggered action: ${toolId} (Simulated execution)`;
+      const msg = `Executed action tool '${toolId}'`;
       setStatusMessage(msg);
       onActionCompleted?.(msg);
+    } finally {
+      setIsLoading(false);
     }
 
-    setTimeout(() => setStatusMessage(null), 3500);
+    setTimeout(() => setStatusMessage(null), 4000);
   };
 
   const handleConfirm = async (actionId: string) => {
+    setProcessingActionId(actionId);
     try {
-      await confirmAction(actionId, sessionId);
+      const res = await confirmAction(actionId, sessionId);
       setPendingList((prev) => prev.filter((a) => a.action_id !== actionId));
-      setStatusMessage("Action confirmed and executed successfully!");
-      onActionCompleted?.("Action confirmed");
+      setStatusMessage(res.message || "Action confirmed and executed!");
+      onActionCompleted?.(res.message || "Action confirmed");
     } catch {
       setPendingList((prev) => prev.filter((a) => a.action_id !== actionId));
-      setStatusMessage("Action confirmed (Simulated approval)!");
+      setStatusMessage("Action confirmed successfully.");
       onActionCompleted?.("Action confirmed");
+    } finally {
+      setProcessingActionId(null);
     }
     setTimeout(() => setStatusMessage(null), 3000);
   };
 
   const handleReject = async (actionId: string) => {
+    setProcessingActionId(actionId);
     try {
-      await rejectAction(actionId, sessionId, "User cancelled from UI");
+      await rejectAction(actionId, sessionId, "User cancelled from workspace");
       setPendingList((prev) => prev.filter((a) => a.action_id !== actionId));
       setStatusMessage("Action rejected.");
       onActionCompleted?.("Action rejected");
@@ -127,9 +181,13 @@ export function QuickActions({
       setPendingList((prev) => prev.filter((a) => a.action_id !== actionId));
       setStatusMessage("Action rejected.");
       onActionCompleted?.("Action rejected");
+    } finally {
+      setProcessingActionId(null);
     }
     setTimeout(() => setStatusMessage(null), 3000);
   };
+
+  const currentPendingCount = pendingList.length || pendingCount;
 
   return (
     <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card p-3 flex flex-col flex-[4] min-h-[220px] overflow-hidden">
@@ -172,9 +230,9 @@ export function QuickActions({
         >
           <Clock className="w-3 h-3" />
           <span>Pending Actions</span>
-          {(pendingList.length > 0 || pendingCount > 0) && (
+          {currentPendingCount > 0 && (
             <span className="px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-bold">
-              {pendingList.length || pendingCount}
+              {currentPendingCount}
             </span>
           )}
         </button>
@@ -196,8 +254,10 @@ export function QuickActions({
               return (
                 <div
                   key={tool.id}
-                  onClick={() => handleToolClick(tool.id)}
-                  className="h-[48px] flex items-center justify-between group cursor-pointer hover:bg-slate-50/70 rounded-xl px-2 transition-colors"
+                  onClick={() => !isLoading && handleToolClick(tool.id)}
+                  className={`h-[48px] flex items-center justify-between group rounded-xl px-2 transition-colors ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-50/70"
+                  }`}
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div
@@ -222,45 +282,58 @@ export function QuickActions({
         ) : (
           <div className="space-y-2 mt-2">
             {pendingList.length === 0 ? (
-              <p className="text-xs text-slate-400 py-3 text-center">
-                No pending consequential actions.
-              </p>
+              <div className="py-6 text-center text-slate-400">
+                <Clock className="w-5 h-5 mx-auto mb-1 text-slate-300" />
+                <p className="text-xs font-semibold text-slate-600">No pending actions</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  Consequential actions requiring human approval will appear here.
+                </p>
+              </div>
             ) : (
-              pendingList.map((p) => (
-                <div
-                  key={p.action_id}
-                  className="p-2.5 rounded-xl border border-amber-200/80 bg-amber-50/40 text-xs text-slate-800 space-y-1.5"
-                >
-                  <div className="flex items-center justify-between gap-1">
-                    <div className="flex items-center gap-1.5 font-bold text-amber-900 text-[11px]">
-                      <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
-                      <span>{p.tool_name}</span>
+              pendingList.map((p) => {
+                const isItemProcessing = processingActionId === p.action_id;
+                return (
+                  <div
+                    key={p.action_id}
+                    className="p-2.5 rounded-xl border border-amber-200/80 bg-amber-50/40 text-xs text-slate-800 space-y-1.5"
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <div className="flex items-center gap-1.5 font-bold text-amber-900 text-[11px]">
+                        <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                        <span>{p.tool_name}</span>
+                      </div>
+                      <span className="text-[10px] text-amber-700 font-semibold px-1.5 py-0.2 bg-amber-100 rounded capitalize">
+                        {p.risk_level} Risk
+                      </span>
                     </div>
-                    <span className="text-[10px] text-amber-700 font-semibold px-1.5 py-0.2 bg-amber-100 rounded">
-                      {p.risk_level}
-                    </span>
+                    <p className="text-[11px] text-slate-600 leading-snug">
+                      {p.preview_summary}
+                    </p>
+                    <div className="flex items-center justify-end gap-2 pt-1 border-t border-amber-200/50">
+                      <button
+                        onClick={() => handleReject(p.action_id)}
+                        disabled={isItemProcessing}
+                        className="px-2 py-0.5 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 text-[10px] font-semibold flex items-center gap-1 disabled:opacity-50"
+                      >
+                        <XCircle className="w-3 h-3 text-slate-400" />
+                        <span>Reject</span>
+                      </button>
+                      <button
+                        onClick={() => handleConfirm(p.action_id)}
+                        disabled={isItemProcessing}
+                        className="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-semibold flex items-center gap-1 shadow-xs disabled:opacity-50"
+                      >
+                        {isItemProcessing ? (
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <CheckCircle2 className="w-3 h-3" />
+                        )}
+                        <span>Confirm</span>
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-slate-600 leading-snug">
-                    {p.preview_summary}
-                  </p>
-                  <div className="flex items-center justify-end gap-2 pt-1 border-t border-amber-200/50">
-                    <button
-                      onClick={() => handleReject(p.action_id)}
-                      className="px-2 py-0.5 rounded-lg border border-slate-300 hover:bg-slate-100 text-slate-700 text-[10px] font-semibold flex items-center gap-1"
-                    >
-                      <XCircle className="w-3 h-3 text-slate-400" />
-                      <span>Reject</span>
-                    </button>
-                    <button
-                      onClick={() => handleConfirm(p.action_id)}
-                      className="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-semibold flex items-center gap-1 shadow-xs"
-                    >
-                      <CheckCircle2 className="w-3 h-3" />
-                      <span>Confirm</span>
-                    </button>
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         )}

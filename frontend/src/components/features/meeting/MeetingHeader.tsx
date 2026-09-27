@@ -17,6 +17,7 @@ interface MeetingHeaderProps {
   participantsCount?: number;
   dateStr?: string;
   status?: string;
+  isLoading?: boolean;
   onShare?: () => void;
   onDownload?: () => void;
 }
@@ -27,9 +28,30 @@ export function MeetingHeader({
   participantsCount = 12,
   dateStr = "Apr 28, 2025 • 10:00 AM",
   status = "Completed",
+  isLoading = false,
   onShare,
   onDownload,
 }: MeetingHeaderProps) {
+  if (isLoading) {
+    return (
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-card min-h-[112px] flex items-center animate-pulse">
+        <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3.5 flex-1">
+            <div className="w-10 h-10 rounded-xl bg-slate-200 shrink-0" />
+            <div className="space-y-2 flex-1 max-w-lg">
+              <div className="h-6 bg-slate-200 rounded w-3/4" />
+              <div className="h-3.5 bg-slate-100 rounded w-1/2" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-7 w-20 bg-slate-100 rounded-lg" />
+            <div className="h-7 w-20 bg-slate-100 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-white via-indigo-50/20 to-blue-50/40 px-5 py-4 shadow-card min-h-[112px] flex items-center">
       {/* Abstract subtle flowing wave graphics on right background */}
@@ -86,7 +108,7 @@ export function MeetingHeader({
         {/* Right: Completed Status Badge + Buttons */}
         <div className="flex sm:flex-col sm:items-end justify-between items-center gap-2 shrink-0">
           {/* Status Badge */}
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/70 text-emerald-700 text-[11px] font-semibold">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200/70 text-emerald-700 text-[11px] font-semibold capitalize">
             <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             <span>{status}</span>
           </div>
