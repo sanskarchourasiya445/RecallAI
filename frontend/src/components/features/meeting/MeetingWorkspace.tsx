@@ -16,6 +16,7 @@ import { AIChat } from "@/components/features/chat/AIChat";
 import { QuickActions } from "@/components/features/actions/QuickActions";
 import { NewMeetingModal } from "@/components/features/meeting/NewMeetingModal";
 import { TranscriptModal } from "@/components/features/meeting/TranscriptModal";
+import { VoiceModal } from "@/components/features/voice/VoiceModal";
 import { useMeeting, DEMO_SESSION_ID } from "@/lib/hooks/useMeeting";
 import { AlertCircle, RefreshCw, WifiOff } from "lucide-react";
 
@@ -32,6 +33,7 @@ export function MeetingWorkspace({
   const [activeTab, setActiveTab] = useState<MeetingTabId>(initialTab);
   const [isNewMeetingOpen, setIsNewMeetingOpen] = useState(false);
   const [isTranscriptOpen, setIsTranscriptOpen] = useState(false);
+  const [isVoiceOpen, setIsVoiceOpen] = useState(false);
   const [targetTranscriptTime, setTargetTranscriptTime] = useState<string | null>(null);
   const [targetEvidenceId, setTargetEvidenceId] = useState<string | null>(null);
 
@@ -189,6 +191,7 @@ export function MeetingWorkspace({
         isLoading={isLoading}
         onShare={handleShare}
         onDownload={handleDownload}
+        onVoiceClick={() => setIsVoiceOpen(true)}
       />
 
       {/* 5. MEETING TABS */}
@@ -283,6 +286,17 @@ export function MeetingWorkspace({
         title={`${meeting?.title || "Meeting"} — Transcript`}
         targetTimestamp={targetTranscriptTime}
         targetEvidenceId={targetEvidenceId}
+      />
+
+      <VoiceModal
+        isOpen={isVoiceOpen}
+        onClose={() => setIsVoiceOpen(false)}
+        config={{
+          sessionId: sessionId,
+          language: "english",
+          participantName: "RecallAI User",
+        }}
+        meetingTitle={meeting?.title}
       />
     </AppShell>
   );

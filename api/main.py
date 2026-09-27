@@ -27,6 +27,7 @@ from api.routes import (
     voice_router,
     search_router,
     workspace_router,
+    livekit_router,
 )
 from api.schemas.common import ErrorResponse
 
@@ -128,6 +129,7 @@ app.include_router(actions_router, prefix=API_V1_PREFIX)
 app.include_router(voice_router, prefix=API_V1_PREFIX)
 app.include_router(search_router, prefix=API_V1_PREFIX)
 app.include_router(workspace_router, prefix=API_V1_PREFIX)
+app.include_router(livekit_router, prefix=API_V1_PREFIX)
 
 
 if __name__ == "__main__":

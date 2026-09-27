@@ -52,6 +52,14 @@ fpdf2>=2.7.9                      # Lightweight alternative PDF library
 # ── Text-to-Speech (TTS) ───────────────────────────────────────────────────────
 gtts>=2.5.0                       # Lightweight text-to-speech for voice answers
 
+# ── Phase 6: Real-Time Voice (LiveKit + Pipecat) ─────────────────────────────
+livekit-api>=1.0.0                # LiveKit server API client (token generation)
+livekit-agents>=1.0.0             # LiveKit Agents SDK (voice pipeline orchestration)
+livekit-plugins-silero>=1.0.0     # Silero VAD plugin (turn detection)
+livekit-plugins-deepgram>=1.0.0   # Deepgram STT plugin (optional — falls back to Whisper)
+livekit-plugins-openai>=1.0.0     # OpenAI TTS plugin (optional — falls back to gTTS)
+pyjwt>=2.0.0                      # JWT token signing for LiveKit access tokens
+
 # ── Utilities ─────────────────────────────────────────────────────────────────
 python-dotenv>=1.0.0              # Load API keys from .env
 numpy>=1.26.0

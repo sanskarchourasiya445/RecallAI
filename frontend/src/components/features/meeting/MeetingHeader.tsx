@@ -9,6 +9,7 @@ import {
   Share2,
   Download,
   MoreHorizontal,
+  Mic,
 } from "lucide-react";
 
 interface MeetingHeaderProps {
@@ -20,6 +21,7 @@ interface MeetingHeaderProps {
   isLoading?: boolean;
   onShare?: () => void;
   onDownload?: () => void;
+  onVoiceClick?: () => void;
 }
 
 export function MeetingHeader({
@@ -31,6 +33,7 @@ export function MeetingHeader({
   isLoading = false,
   onShare,
   onDownload,
+  onVoiceClick,
 }: MeetingHeaderProps) {
   if (isLoading) {
     return (
@@ -113,8 +116,18 @@ export function MeetingHeader({
             <span>{status}</span>
           </div>
 
-          {/* Action Buttons: Share, Download, More */}
+          {/* Action Buttons: Voice, Share, Download, More */}
           <div className="flex items-center gap-1.5">
+            {onVoiceClick && (
+              <button
+                onClick={onVoiceClick}
+                className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 text-xs font-semibold shadow-2xs transition-all active:scale-95"
+                title="Start voice interaction"
+              >
+                <Mic className="w-3 h-3 text-indigo-600" />
+                <span>Voice</span>
+              </button>
+            )}
             <button
               onClick={onShare}
               className="inline-flex items-center gap-1.5 h-7 px-2.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-medium shadow-2xs transition-all active:scale-95"

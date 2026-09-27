@@ -11,7 +11,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, status
 from pydantic import BaseModel, Field
 
 from core.logger import get_logger
-from core.voice import transcribe_voice_input_safe, synthesize_answer
+from core.voice.voice import transcribe_voice_input_safe, synthesize_answer
 from core.config import DOWNLOAD_DIR
 
 logger = get_logger("gistly.api.voice")

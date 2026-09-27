@@ -33,10 +33,10 @@ def prepare_text_for_speech(text: str, max_chars: int = 400) -> str:
 
     cleaned = text.strip()
 
-    # 1. Strip evidence and chunk citation patterns: [E1], [E2], [Evidence E1], [Chunk 3], etc.
-    cleaned = re.sub(r"\[(?:Evidence\s+)?E\d+(?:,\s*E\d+)*\]", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\[(?:Chunk\s+)?#?\d+\]", "", cleaned, flags=re.IGNORECASE)
-    cleaned = re.sub(r"\[\d{2}:\d{2}(?::\d{2})?\s*[-–]\s*\d{2}:\d{2}(?::\d{2})?\]", "", cleaned)
+    # 1. Strip evidence and chunk citation patterns: [E1], [E2 · title · 01:23], [Evidence E1], [Chunk 3], etc.
+    cleaned = re.sub(r"\[(?:Evidence\s+)?E\d+[^\]]*\]", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\[(?:Chunk\s+)?#?\d+[^\]]*\]", "", cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r"\[\d{2}:\d{2}(?::\d{2})?\s*[-–—]\s*\d{2}:\d{2}(?::\d{2})?\]", "", cleaned)
 
     # 2. Strip XML/HTML tags
     cleaned = re.sub(r"<[^>]+>", "", cleaned)
