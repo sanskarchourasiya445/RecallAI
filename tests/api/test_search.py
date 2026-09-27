@@ -54,11 +54,17 @@ class TestGlobalSearch(unittest.TestCase):
         self.assertIn("relevance_score", first_res)
         self.assertTrue(first_res["relevance_score"] > 0)
 
+        import re
+        for r in data["results"]:
+            if r.get("evidence_id"):
+                self.assertTrue(re.match(r"^E\d+$", r["evidence_id"]), f"Invalid evidence_id format: {r.get('evidence_id')}")
+
     def test_global_search_session_filter(self):
         """Passing session_id filters results to only that meeting."""
         res = self.client.get(f"/api/v1/search?q=postgresql&session_id={DEMO_SESSION_ID}")
         self.assertEqual(res.status_code, 200)
         data = res.json()
+        self.assertEqual(data.get("session_id"), DEMO_SESSION_ID)
         for r in data["results"]:
             self.assertEqual(r["session_id"], DEMO_SESSION_ID)
 

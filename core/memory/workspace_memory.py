@@ -76,6 +76,20 @@ class WorkspaceEntityMention:
         return asdict(self)
 
 
+def clean_plain_text(val: Optional[str]) -> Optional[str]:
+    """Strip any raw HTML tags, escape artifacts, and excessive whitespace."""
+    if val is None:
+        return None
+    s = str(val).strip()
+    if not s:
+        return None
+    s = re.sub(r"<[^>]+>", " ", s)
+    s = " ".join(s.split())
+    if (s.startswith('"') and s.endswith('"')) or (s.startswith("'") and s.endswith("'")):
+        s = s[1:-1].strip()
+    return s or None
+
+
 class WorkspaceMemory:
     """
     Persistent in-memory workspace intelligence index.
@@ -110,16 +124,16 @@ class WorkspaceMemory:
             if not session_data or sid in self._last_synced_session_ids:
                 continue
 
-            meeting_title = session_data.get("title", f"Meeting {sid}")
+            meeting_title = clean_plain_text(session_data.get("title")) or f"Meeting {sid}"
 
             # 1. Index Decisions
             raw_decisions = session_data.get("key_decisions_structured", [])
             for idx, d in enumerate(raw_decisions):
-                dec_text = getattr(d, "decision", None) or (d.get("decision") if isinstance(d, dict) else str(d))
-                rationale = getattr(d, "rationale", None) or (d.get("rationale") if isinstance(d, dict) else None)
-                evidence = getattr(d, "evidence", None) or (d.get("evidence") if isinstance(d, dict) else None)
-                ts = getattr(d, "start_time", None) or (d.get("start_time") if isinstance(d, dict) else None)
-                status = getattr(d, "status", None) or (d.get("status") if isinstance(d, dict) else "Confirmed")
+                dec_text = clean_plain_text(getattr(d, "decision", None) or (d.get("decision") if isinstance(d, dict) else str(d)))
+                rationale = clean_plain_text(getattr(d, "rationale", None) or (d.get("rationale") if isinstance(d, dict) else None))
+                evidence = clean_plain_text(getattr(d, "evidence", None) or (d.get("evidence") if isinstance(d, dict) else None))
+                ts = clean_plain_text(getattr(d, "start_time", None) or (d.get("start_time") if isinstance(d, dict) else None))
+                status = clean_plain_text(getattr(d, "status", None) or (d.get("status") if isinstance(d, dict) else "Confirmed"))
 
                 if dec_text:
                     self._decisions.append(
@@ -138,13 +152,13 @@ class WorkspaceMemory:
             # 2. Index Action Items
             raw_actions = session_data.get("action_items_structured", [])
             for idx, a in enumerate(raw_actions):
-                task = getattr(a, "task", None) or (a.get("task") if isinstance(a, dict) else str(a))
-                owner = getattr(a, "owner", None) or (a.get("owner") if isinstance(a, dict) else None)
-                deadline = getattr(a, "deadline", None) or (a.get("deadline") if isinstance(a, dict) else None)
-                priority = getattr(a, "priority", None) or (a.get("priority") if isinstance(a, dict) else "Medium")
-                evidence = getattr(a, "evidence", None) or (a.get("evidence") if isinstance(a, dict) else None)
-                ts = getattr(a, "start_time", None) or (a.get("start_time") if isinstance(a, dict) else None)
-                status = getattr(a, "status", None) or (a.get("status") if isinstance(a, dict) else "Open")
+                task = clean_plain_text(getattr(a, "task", None) or (a.get("task") if isinstance(a, dict) else str(a)))
+                owner = clean_plain_text(getattr(a, "owner", None) or (a.get("owner") if isinstance(a, dict) else None))
+                deadline = clean_plain_text(getattr(a, "deadline", None) or (a.get("deadline") if isinstance(a, dict) else None))
+                priority = clean_plain_text(getattr(a, "priority", None) or (a.get("priority") if isinstance(a, dict) else "Medium"))
+                evidence = clean_plain_text(getattr(a, "evidence", None) or (a.get("evidence") if isinstance(a, dict) else None))
+                ts = clean_plain_text(getattr(a, "start_time", None) or (a.get("start_time") if isinstance(a, dict) else None))
+                status = clean_plain_text(getattr(a, "status", None) or (a.get("status") if isinstance(a, dict) else "Open"))
 
                 if task:
                     self._action_items.append(
@@ -165,11 +179,11 @@ class WorkspaceMemory:
             # 3. Index Open Questions
             raw_questions = session_data.get("open_questions_structured", [])
             for idx, q in enumerate(raw_questions):
-                q_text = getattr(q, "question", None) or (q.get("question") if isinstance(q, dict) else str(q))
-                context = getattr(q, "context", None) or (q.get("context") if isinstance(q, dict) else None)
-                evidence = getattr(q, "evidence", None) or (q.get("evidence") if isinstance(q, dict) else None)
-                ts = getattr(q, "start_time", None) or (q.get("start_time") if isinstance(q, dict) else None)
-                status = getattr(q, "status", None) or (q.get("status") if isinstance(q, dict) else "Unresolved")
+                q_text = clean_plain_text(getattr(q, "question", None) or (q.get("question") if isinstance(q, dict) else str(q)))
+                context = clean_plain_text(getattr(q, "context", None) or (q.get("context") if isinstance(q, dict) else None))
+                evidence = clean_plain_text(getattr(q, "evidence", None) or (q.get("evidence") if isinstance(q, dict) else None))
+                ts = clean_plain_text(getattr(q, "start_time", None) or (q.get("start_time") if isinstance(q, dict) else None))
+                status = clean_plain_text(getattr(q, "status", None) or (q.get("status") if isinstance(q, dict) else "Unresolved"))
 
                 if q_text:
                     self._open_questions.append(

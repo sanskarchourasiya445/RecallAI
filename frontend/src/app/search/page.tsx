@@ -56,6 +56,7 @@ function GlobalSearchContent() {
   const [results, setResults] = useState<SearchResultItem[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [meetings, setMeetings] = useState<MeetingListItem[]>([]);
 
   // Workspace memory state
@@ -72,6 +73,7 @@ function GlobalSearchContent() {
     if (!searchTerm.trim()) return;
     setIsSearching(true);
     setHasSearched(true);
+    setErrorMessage(null);
 
     try {
       const sid = meetingFilter && meetingFilter !== "all" ? meetingFilter : undefined;
@@ -81,8 +83,10 @@ function GlobalSearchContent() {
         session_id: sid,
       });
       setResults(res.results || []);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Search failed:", err);
+      const msg = err instanceof Error ? err.message : "Failed to execute search. Please check your connection and try again.";
+      setErrorMessage(msg);
       setResults([]);
     } finally {
       setIsSearching(false);
@@ -284,6 +288,10 @@ function GlobalSearchContent() {
     <AppShell
       currentNav="search"
       onNewMeetingClick={() => router.push("/meetings")}
+      onSearch={(q) => {
+        setQuery(q);
+        executeSearch(q, selectedMeetingId);
+      }}
       rightPanel={
         <div className="p-4 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
@@ -523,6 +531,23 @@ function GlobalSearchContent() {
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* Error Banner */}
+            {errorMessage && (
+              <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 flex items-center justify-between gap-3 text-xs shadow-2xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span className="font-medium">{errorMessage}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => executeSearch(query, selectedMeetingId)}
+                  className="px-3 py-1 bg-white hover:bg-rose-100 text-rose-700 font-semibold rounded-lg border border-rose-300 transition-colors shrink-0"
+                >
+                  Retry
+                </button>
               </div>
             )}
 

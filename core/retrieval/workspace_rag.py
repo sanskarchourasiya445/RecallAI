@@ -37,6 +37,27 @@ STOP_WORDS = {
 }
 
 
+def find_evidence_id_for_timestamp(session_data: Optional[Dict[str, Any]], start_sec: float) -> str:
+    """Find the corresponding E# evidence id for a timestamp in the session transcript."""
+    if not session_data:
+        return "E1"
+    raw_transcript = session_data.get("transcript", "")
+    if not raw_transcript:
+        return "E1"
+    blocks = [b.strip() for b in raw_transcript.split("\n\n") if b.strip()]
+    for idx, block in enumerate(blocks):
+        lines = block.split("\n")
+        if lines and ":" in lines[0] and ("-" in lines[0] or "-->" in lines[0]):
+            time_part = lines[0].split("-")[0].strip()
+            block_start = parse_timestamp(time_part)
+            time_end_part = lines[0].split("-")[1].strip() if "-" in lines[0] else ""
+            block_end = parse_timestamp(time_end_part) if time_end_part else block_start + 45.0
+            if block_start <= start_sec <= block_end:
+                return f"E{idx + 1}"
+    approx_idx = max(1, int(start_sec // 45) + 1)
+    return f"E{approx_idx}"
+
+
 def search_workspace(
     query: str,
     store: Optional[MeetingSessionStore] = None,
@@ -148,6 +169,8 @@ def search_workspace(
 
         ts_str = sm.get("timestamp") or "00:00:00"
         start_sec = parse_timestamp(ts_str)
+        session_data = session_store.get_session(sid)
+        ev_id = find_evidence_id_for_timestamp(session_data, start_sec)
 
         all_results.append({
             "session_id": sid,
@@ -159,7 +182,7 @@ def search_workspace(
             "snippet": f"[{sm['match_type'].replace('_', ' ').title()}] {snippet_text}",
             "match_type": sm["match_type"],
             "relevance_score": round(min(0.98, sm["score"] + 0.1), 3),
-            "evidence_id": sm.get("evidence", "")[:4] or "E1",
+            "evidence_id": ev_id,
             "chunk_index": 0,
         })
 
@@ -378,11 +401,12 @@ def run_workspace_assistant(
             + "\n\n*(Note: LLM API key not configured; showing grounded multi-meeting retrieval synthesis.)*"
         )
 
+    refused = bool("could not find" in answer.lower())
     return {
         "answer": answer,
         "citations": citations,
         "evidence": [ev.to_dict() for ev in evidence],
         "resolved_query": clean_q,
         "sources": list(unique_sources.values()),
-        "refused": False,
+        "refused": refused,
     }

@@ -30,7 +30,7 @@ def search_global(
     store: MeetingSessionStore = Depends(get_session_store),
 ) -> GlobalSearchResponse:
     if not q or not q.strip():
-        return GlobalSearchResponse(query="", total=0, results=[])
+        return GlobalSearchResponse(query="", total=0, session_id=session_id, results=[])
 
     raw_results = search_workspace(
         query=q,
@@ -59,5 +59,6 @@ def search_global(
     return GlobalSearchResponse(
         query=q.strip(),
         total=len(items),
+        session_id=session_id,
         results=items,
     )

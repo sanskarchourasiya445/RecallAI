@@ -25,4 +25,5 @@ class GlobalSearchResponse(BaseModel):
     """Response payload for global workspace search queries."""
     query: str
     total: int
+    session_id: Optional[str] = Field(None, description="Applied session ID filter if any")
     results: List[SearchResultItem] = Field(default_factory=list)

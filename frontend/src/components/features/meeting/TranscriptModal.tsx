@@ -49,6 +49,75 @@ function getSpeakerStyle(name: string) {
   );
 }
 
+function parseTimeToSeconds(timeStr: string | null | undefined): number | null {
+  if (!timeStr) return null;
+  const cleaned = timeStr.trim().replace(/^t=/, "").replace(/s$/, "");
+  if (!cleaned) return null;
+
+  if (/^\d+(\.\d+)?$/.test(cleaned)) {
+    return parseFloat(cleaned);
+  }
+
+  const parts = cleaned.split(":").map(Number);
+  if (parts.some(isNaN)) return null;
+
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  } else if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  return null;
+}
+
+function parseTimeRangeBounds(timeRange: string): { start: number; end: number } | null {
+  if (!timeRange) return null;
+  const parts = timeRange.split(/[-–—]|-->/);
+  if (parts.length >= 2) {
+    const start = parseTimeToSeconds(parts[0].trim());
+    const end = parseTimeToSeconds(parts[1].trim());
+    if (start !== null && end !== null) {
+      return { start, end };
+    }
+  } else if (parts.length === 1) {
+    const start = parseTimeToSeconds(parts[0].trim());
+    if (start !== null) {
+      return { start, end: start + 45 };
+    }
+  }
+  return null;
+}
+
+function isEntryMatchingTarget(
+  entry: TranscriptEntry,
+  targetTimestamp?: string | null,
+  targetEvidenceId?: string | null
+): boolean {
+  if (targetEvidenceId) {
+    const cleanTargetEv = targetEvidenceId.trim().replace(/[\[\]]/g, "").toUpperCase();
+    const cleanEntryEv = (entry.evidenceId || "").trim().replace(/[\[\]]/g, "").toUpperCase();
+    if (cleanTargetEv && cleanEntryEv === cleanTargetEv) {
+      return true;
+    }
+  }
+
+  if (targetTimestamp) {
+    const targetSec = parseTimeToSeconds(targetTimestamp);
+    if (targetSec !== null) {
+      const bounds = parseTimeRangeBounds(entry.timeRange);
+      if (bounds) {
+        if (targetSec >= bounds.start - 1.5 && targetSec <= bounds.end + 1.5) {
+          return true;
+        }
+      }
+    }
+    if (entry.timeRange.toLowerCase().includes(targetTimestamp.toLowerCase())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function TranscriptModal({
   isOpen,
   onClose,
@@ -137,10 +206,8 @@ export function TranscriptModal({
   // Scroll to target timestamp or evidence if requested
   useEffect(() => {
     if (isOpen && (targetTimestamp || targetEvidenceId)) {
-      const matched = parsedEntries.find(
-        (e) =>
-          (targetTimestamp && (e.timeRange.includes(targetTimestamp) || targetTimestamp.includes(e.timeRange))) ||
-          (targetEvidenceId && e.evidenceId === targetEvidenceId)
+      const matched = parsedEntries.find((e) =>
+        isEntryMatchingTarget(e, targetTimestamp, targetEvidenceId)
       );
 
       if (matched && entryRefs.current[matched.id]) {
@@ -304,9 +371,7 @@ export function TranscriptModal({
           ) : (
             filteredEntries.map((item) => {
               const spkStyle = getSpeakerStyle(item.speaker);
-              const isTarget =
-                (targetTimestamp && (item.timeRange.includes(targetTimestamp) || targetTimestamp.includes(item.timeRange))) ||
-                (targetEvidenceId && item.evidenceId === targetEvidenceId);
+              const isTarget = isEntryMatchingTarget(item, targetTimestamp, targetEvidenceId);
 
               return (
                 <div

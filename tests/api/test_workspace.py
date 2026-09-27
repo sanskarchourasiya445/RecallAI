@@ -43,6 +43,17 @@ class TestWorkspaceIntelligence(unittest.TestCase):
         self.assertTrue(len(data["action_items"]) >= 3)
         self.assertTrue(len(data["open_questions"]) >= 2)
 
+        import re
+        html_tag_pattern = re.compile(r"<[^>]+>")
+        for dec in data["decisions"]:
+            self.assertFalse(html_tag_pattern.search(dec.get("decision", "")))
+            if dec.get("evidence"):
+                self.assertFalse(html_tag_pattern.search(dec["evidence"]))
+        for act in data["action_items"]:
+            self.assertFalse(html_tag_pattern.search(act.get("task", "")))
+        for q in data["open_questions"]:
+            self.assertFalse(html_tag_pattern.search(q.get("question", "")))
+
     def test_workspace_chat_cross_meeting(self):
         """POST /api/v1/workspace/chat synthesizes evidence across meetings with citations."""
         res = self.client.post(
@@ -94,6 +105,7 @@ class TestWorkspaceIntelligence(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertTrue("could not find" in data["answer"].lower() or data.get("refused", False))
+        self.assertTrue(data.get("refused", False))
 
 
 if __name__ == "__main__":
